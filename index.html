@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>José Andrés Barrantes · Asistentes de WhatsApp con IA</title>
+<meta name="description" content="Asistentes de WhatsApp con IA para negocios en Costa Rica: responden en español e inglés, toman reservas o citas y avisan cuando alguien necesita una persona.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #F2F4F1;
+  --surface: #FFFFFF;
+  --ink: #141B17;
+  --muted: #56635C;
+  --line: #D6DDD8;
+  --accent: #0B7A63;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #D7ECE5;
+  --blue: #1F5FAD;
+  --blue-soft: #DCE7F6;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1210;
+    --surface: #151D19;
+    --ink: #E4ECE7;
+    --muted: #9AABA2;
+    --line: #29352F;
+    --accent: #36B394;
+    --accent-ink: #04201A;
+    --accent-soft: #183A31;
+    --blue: #6AA6F0;
+    --blue-soft: #1A2D47;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1210;
+  --surface: #151D19;
+  --ink: #E4ECE7;
+  --muted: #9AABA2;
+  --line: #29352F;
+  --accent: #36B394;
+  --accent-ink: #04201A;
+  --accent-soft: #183A31;
+  --blue: #6AA6F0;
+  --blue-soft: #1A2D47;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: inherit; }
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.hero { padding-block: 56px 40px; }
+.eyebrow {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+h1 {
+  margin: 0;
+  max-width: 20ch;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 6vw, 56px);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.lede {
+  margin: 20px 0 0;
+  max-width: 58ch;
+  color: var(--muted);
+  font-size: 18px;
+}
+h2 {
+  margin: 0 0 16px;
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.2;
+}
+section { padding-block: 24px; }
+.demos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.demo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.demo:hover {
+  border-color: var(--tone);
+  transform: translateY(-2px);
+}
+.demo.tours { --tone: var(--accent); --tone-soft: var(--accent-soft); }
+.demo.clinica { --tone: var(--blue); --tone-soft: var(--blue-soft); }
+.tag {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--tone-soft);
+  color: var(--tone);
+  font-size: 13px;
+  font-weight: 600;
+}
+.demo h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.15;
+}
+.demo ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+.demo li + li { margin-top: 4px; }
+.cta {
+  margin-top: auto;
+  color: var(--tone);
+  font-weight: 600;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: paso;
+}
+.steps li {
+  padding: 20px;
+  border-top: 2px solid var(--line);
+  counter-increment: paso;
+}
+.steps li::before {
+  content: counter(paso);
+  display: block;
+  margin-bottom: 8px;
+  color: var(--accent);
+  font: 700 28px var(--font-display);
+}
+.steps strong { display: block; margin-bottom: 4px; }
+.steps span { color: var(--muted); }
+.promesas {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.promesas li {
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+footer {
+  padding-block: 32px 48px;
+  color: var(--muted);
+  font-size: 14px;
+}
+@media (max-width: 760px) {
+  .hero { padding-block: 36px 24px; }
+  .demos, .steps { grid-template-columns: minmax(0, 1fr); }
+  .lede { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .demo { transition: none; }
+  .demo:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">José Andrés Barrantes · Costa Rica</p>
+    <h1>Tu negocio responde por WhatsApp a cualquier hora, en español y en inglés.</h1>
+    <p class="lede">Armo asistentes con IA que contestan las preguntas de siempre, toman reservas o citas y te avisan cuando alguien necesita hablar con una persona. Pruébalos aquí con dos negocios de ejemplo.</p>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <h2>Pruébalos</h2>
+      <div class="demos">
+        <a class="demo tours" href="/tours">
+          <span class="tag">Turismo</span>
+          <h3>Operador de tours</h3>
+          <ul>
+            <li>Da precios, horarios y políticas al instante</li>
+            <li>Toma la reserva paso a paso: tour, fecha, personas y pickup</li>
+            <li>Atiende turistas en inglés de madrugada</li>
+          </ul>
+          <span class="cta">Abrir la demo →</span>
+        </a>
+        <a class="demo clinica" href="/clinica">
+          <span class="tag">Salud</span>
+          <h3>Clínica dental</h3>
+          <ul>
+            <li>Agenda citas según tus horarios y días de atención</li>
+            <li>Marca como urgencia a quien tiene dolor y te avisa</li>
+            <li>No da diagnósticos ni recomienda medicamentos</li>
+          </ul>
+          <span class="cta">Abrir la demo →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Cómo funciona</h2>
+      <ol class="steps">
+        <li><strong>Me cuentas tu negocio</strong><span>Precios, horarios, políticas y las preguntas que más te hacen.</span></li>
+        <li><strong>Lo conecto a tu WhatsApp</strong><span>Con la API oficial de Meta, en el número de tu negocio.</span></li>
+        <li><strong>Tú recibes lo importante</strong><span>Las reservas caen en una hoja de Google y te llega un aviso por WhatsApp.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Lo que siempre cumple</h2>
+      <ul class="promesas">
+        <li>Se presenta como asistente virtual desde el primer mensaje.</li>
+        <li>Solo responde con la información que tú apruebas.</li>
+        <li>Si no sabe algo o el cliente lo pide, pasa la conversación a una persona.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">© 2026 José Andrés Barrantes. Los negocios de las demos son ficticios.</div>
+</footer>
+</body>
+</html>

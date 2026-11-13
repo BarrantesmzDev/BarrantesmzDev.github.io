@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Asistente Ceiba Tours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Dos paneles: el chat del turista junto a la bandeja del dueño; en el celular, pestañas */
+:root {
+  --bg: #ECF0ED;
+  --surface: #FFFFFF;
+  --surface-2: #F3F6F4;
+  --chat-bg: #E1E8E3;
+  --ink: #15201B;
+  --muted: #55655D;
+  --line: #D1DAD4;
+  --accent: #0B7A63;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #D5ECE5;
+  --bubble-bot: #FFFFFF;
+  --bubble-user: #0B7A63;
+  --bubble-user-ink: #FFFFFF;
+  --amber: #955700;
+  --amber-soft: #FBEACB;
+  --ok: #166B37;
+  --ok-soft: #DAF0E2;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1411;
+    --surface: #151F1A;
+    --surface-2: #1A2520;
+    --chat-bg: #101915;
+    --ink: #E3ECE7;
+    --muted: #99AAA1;
+    --line: #283630;
+    --accent: #36B394;
+    --accent-ink: #04201A;
+    --accent-soft: #183A31;
+    --bubble-bot: #1C2823;
+    --bubble-user: #1B6E5A;
+    --bubble-user-ink: #EEF8F4;
+    --amber: #F2B65A;
+    --amber-soft: #392A10;
+    --ok: #62CE8A;
+    --ok-soft: #123020;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1411;
+  --surface: #151F1A;
+  --surface-2: #1A2520;
+  --chat-bg: #101915;
+  --ink: #E3ECE7;
+  --muted: #99AAA1;
+  --line: #283630;
+  --accent: #36B394;
+  --accent-ink: #04201A;
+  --accent-soft: #183A31;
+  --bubble-bot: #1C2823;
+  --bubble-user: #1B6E5A;
+  --bubble-user-ink: #EEF8F4;
+  --amber: #F2B65A;
+  --amber-soft: #392A10;
+  --ok: #62CE8A;
+  --ok-soft: #123020;
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+header.top { padding-block: 24px 16px; }
+header.top .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.brand h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.lede {
+  margin: 8px 0 0;
+  max-width: 60ch;
+  color: var(--muted);
+}
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.seg button {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 13px var(--font-body);
+  cursor: pointer;
+}
+.seg button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.btn-ghost {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 500 13px var(--font-body);
+  cursor: pointer;
+}
+.tabs { display: none; }
+main.stage .wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  padding-block: 0 24px;
+}
+.phone {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: clamp(540px, 76vh, 760px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--chat-bg);
+}
+.chat-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: 700 14px var(--font-display);
+}
+.chat-head strong { display: block; font-size: 15px; }
+.chat-head span { font-size: 12.5px; color: var(--muted); }
+.log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+.disclosure {
+  align-self: center;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+}
+.msg {
+  max-width: 86%;
+  padding: 9px 12px 6px;
+  border-radius: 14px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.msg.bot {
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  border-top-left-radius: 4px;
+  background: var(--bubble-bot);
+}
+.msg.user {
+  align-self: flex-end;
+  border-top-right-radius: 4px;
+  background: var(--bubble-user);
+  color: var(--bubble-user-ink);
+}
+.msg time {
+  display: block;
+  margin-top: 2px;
+  text-align: right;
+  font-size: 11px;
+  opacity: 0.72;
+  font-variant-numeric: tabular-nums;
+}
+.typing {
+  align-self: flex-start;
+  display: flex;
+  gap: 4px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bubble-bot);
+}
+.typing i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: blink 1s infinite;
+}
+.typing i:nth-child(2) { animation-delay: 0.15s; }
+.typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 96px;
+  padding: 8px 12px 0;
+  overflow-y: auto;
+}
+.chips button {
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: var(--surface);
+  color: var(--accent);
+  font: 500 13px var(--font-body);
+  cursor: pointer;
+}
+.composer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 12px;
+}
+.composer input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 15px var(--font-body);
+}
+.composer button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0 18px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 600 14px var(--font-body);
+  cursor: pointer;
+}
+.owner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+}
+.owner h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.2;
+}
+.owner h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.kpi {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.kpi b {
+  display: block;
+  font: 700 26px var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.kpi span { font-size: 12.5px; color: var(--muted); }
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.feed li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 14px;
+}
+.feed li.new {
+  border-color: var(--amber);
+  background: var(--amber-soft);
+}
+.feed time {
+  padding-top: 1px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.tablewrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+th, td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+th {
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+tbody tr:last-child td { border-bottom: 0; }
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pill.wait { background: var(--amber-soft); color: var(--amber); }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.tag {
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--amber);
+  color: var(--surface);
+  font-size: 11px;
+  font-weight: 700;
+}
+.note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+footer {
+  padding-block: 8px 32px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+@media (max-width: 860px) {
+  .tabs {
+    display: flex;
+    gap: 8px;
+  }
+  .tabs button {
+    flex: 1;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: var(--surface);
+    color: var(--muted);
+    font: 600 14px var(--font-body);
+    cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] {
+    border-color: var(--accent);
+    color: var(--ink);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+  main.stage .wrap {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .phone {
+    height: max(460px, calc(100vh - 250px));
+    height: max(460px, calc(100dvh - 250px));
+  }
+}
+@media (max-width: 480px) {
+  .kpi b { font-size: 22px; }
+  .kpi { padding: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .typing i { animation: none; opacity: 0.6; }
+  .log { scroll-behavior: auto; }
+}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <p class="eyebrow">Negocio ficticio · demo</p>
+      <h1>Ceiba Tours</h1>
+      <p class="lede">Escríbele como turista, en español o en inglés. Al lado ves lo que le llega al dueño.</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Idioma del asistente">
+        <button type="button" id="lang-es" aria-pressed="true">ES</button>
+        <button type="button" id="lang-en" aria-pressed="false">EN</button>
+      </div>
+      <button type="button" class="btn-ghost" id="reset">Reiniciar</button>
+    </div>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="wrap">
+    <div class="tabs" role="tablist" aria-label="Paneles">
+      <button type="button" role="tab" id="tab-chat" aria-selected="true" aria-controls="pane-chat">Chat del turista</button>
+      <button type="button" role="tab" id="tab-owner" aria-selected="false" aria-controls="pane-owner">Vista del dueño<span class="badge" id="badge" hidden>0</span></button>
+    </div>
+
+    <section class="phone" id="pane-chat" aria-label="Chat del turista">
+      <div class="chat-head">
+        <div class="avatar" aria-hidden="true">CT</div>
+        <div>
+          <strong>Ceiba Tours</strong>
+          <span id="status">Asistente virtual · responde al instante</span>
+        </div>
+      </div>
+      <div class="log" id="log" role="log" aria-live="polite"></div>
+      <div class="chips" id="chips"></div>
+      <form class="composer" id="composer" autocomplete="off">
+        <label class="sr" for="msg">Mensaje</label>
+        <input id="msg" name="msg" type="text" placeholder="Escribe como turista…" maxlength="300">
+        <button type="submit" id="send">Enviar</button>
+      </form>
+    </section>
+
+    <section class="owner" id="pane-owner" aria-label="Vista del dueño">
+      <div>
+        <h2>Vista del dueño</h2>
+        <p class="sub">Lo que recibe el negocio mientras el asistente atiende.</p>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><b id="k-resp">0</b><span>respuestas en esta demo</span></div>
+        <div class="kpi"><b id="k-sol">0</b><span>solicitudes nuevas</span></div>
+        <div class="kpi"><b id="k-hum">0</b><span>piden una persona</span></div>
+      </div>
+      <div>
+        <h3>Avisos</h3>
+        <ul class="feed" id="feed"></ul>
+      </div>
+      <div>
+        <h3>Solicitudes de reserva</h3>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr><th>Fecha</th><th>Tour</th><th>Personas</th><th>Nombre</th><th>Pickup</th><th class="num">Total</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <p class="note">En el asistente real, esta tabla es una hoja de Google del negocio y los avisos le llegan al dueño por WhatsApp. Las filas marcadas como ejemplo son de muestra.</p>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Demo con datos ficticios: el negocio, los tours y los precios son de ejemplo. El asistente real usa IA y solo responde con la información que el negocio aprueba. Demo preparada por <a href="/">José Andrés Barrantes</a>.</div>
+</footer>
+
+<script>
+const NEGOCIO= {
+  nombre: 'Ceiba Tours',
+  asesor: 'Daniela',
+  horario: { es: 'de 7 a. m. a 7 p. m.', en: 'from 7 a.m. to 7 p.m.' },
+  tours: [
+    {
+      id: 'volcan',
+      claves: ['volc', 'arenal', 'lava'],
+      nombre: { es: 'Caminata al Volcán Arenal', en: 'Arenal Volcano Hike' },
+      duracion: { es: '3 horas', en: '3 hours' },
+      salida: { es: '7:30 a. m.', en: '7:30 a.m.' },
+      precio: 55,
+      precioNino: 35,
+      edad: { es: 'desde 6 años', en: 'ages 6 and up' },
+      incluye: { es: 'guía bilingüe, entrada al parque, agua y fruta', en: 'bilingual guide, park entrance, water and fruit' },
+      llevar: { es: 'zapatos cerrados, repelente y capa para lluvia', en: 'closed shoes, bug spray and a rain jacket' }
+    },
+    {
+      id: 'puentes',
+      claves: ['puente', 'bridge', 'colgante', 'hanging'],
+      nombre: { es: 'Puentes Colgantes', en: 'Hanging Bridges' },
+      duracion: { es: '2 horas y media', en: '2.5 hours' },
+      salida: { es: '8:00 a. m. o 2:00 p. m.', en: '8:00 a.m. or 2:00 p.m.' },
+      precio: 45,
+      precioNino: 30,
+      edad: { es: 'todas las edades', en: 'all ages' },
+      incluye: { es: 'guía naturalista, entrada y binoculares', en: 'naturalist guide, entrance and binoculars' },
+      llevar: { es: 'ropa cómoda y cámara', en: 'comfortable clothes and a camera' }
+    },
+    {
+      id: 'rafting',
+      claves: ['raft', 'rápido', 'rapido', 'river', 'whitewater'],
+      nombre: { es: 'Rafting clase II y III', en: 'Class II-III Rafting' },
+      duracion: { es: '4 horas', en: '4 hours' },
+      salida: { es: '8:30 a. m.', en: '8:30 a.m.' },
+      precio: 85,
+      precioNino: null,
+      edad: { es: 'desde 12 años', en: 'ages 12 and up' },
+      incluye: { es: 'equipo completo, guía certificado y almuerzo típico', en: 'full gear, certified guide and a typical lunch' },
+      llevar: { es: 'traje de baño, sandalias con correa y ropa seca para después', en: 'swimsuit, strapped sandals and dry clothes for after' }
+    },
+    {
+      id: 'nocturna',
+      claves: ['noche', 'nocturn', 'night', 'rana', 'frog'],
+      nombre: { es: 'Caminata Nocturna', en: 'Night Walk' },
+      duracion: { es: '2 horas', en: '2 hours' },
+      salida: { es: '5:30 p. m.', en: '5:30 p.m.' },
+      precio: 40,
+      precioNino: 25,
+      edad: { es: 'desde 5 años', en: 'ages 5 and up' },
+      incluye: { es: 'guía con linterna profesional y bebida caliente', en: 'guide with a pro flashlight and a hot drink' },
+      llevar: { es: 'zapatos cerrados y repelente', en: 'closed shoes and bug spray' }
+    }
+  ],
+  pickup: {
+    es: 'Recogemos gratis en hoteles del centro de La Fortuna. Fuera del centro, el pickup cuesta $10 por persona.',
+    en: 'Pickup is free at hotels in downtown La Fortuna. Outside downtown it costs $10 per person.'
+  },
+  pago: {
+    es: 'Una persona del equipo te confirma el espacio y te envía un link seguro para pagar con tarjeta. Si estás en Costa Rica, también puedes pagar por SINPE Móvil.',
+    en: 'A team member confirms your spot and sends you a secure card payment link. Local guests can also pay by SINPE Móvil.'
+  },
+  cancelacion: {
+    es: 'Puedes cancelar gratis hasta 24 horas antes. Si el clima obliga a suspender el tour, lo reprogramamos o te devolvemos el dinero.',
+    en: 'You can cancel for free up to 24 hours before. If weather forces us to suspend the tour, we reschedule or refund you.'
+  }
+};
+
+const UI= {
+  es: { estado: 'Asistente virtual · responde al instante', placeholder: 'Escribe como turista…', enviar: 'Enviar', aviso: 'Estás hablando con un asistente virtual' },
+  en: { estado: 'Virtual assistant · replies instantly', placeholder: 'Type as a tourist…', enviar: 'Send', aviso: 'You are chatting with a virtual assistant' }
+};
+
+const TXT= {
+  bienvenida: {
+    es: '¡Hola! Soy el asistente virtual de Ceiba Tours. Te ayudo con tours, precios y solicitudes de reserva, en español o en inglés. Si prefieres hablar con una persona, solo dime.',
+    en: `Hi! I'm the virtual assistant for Ceiba Tours. I can help with tours, prices and booking requests in English or Spanish. If you'd rather talk to a person, just let me know.`
+  },
+  inicio: {
+    es: ['Ver tours y precios', 'Quiero reservar', '¿Recogen en el hotel?', 'Hablar con una persona'],
+    en: ['Tours and prices', 'Book a tour', 'Hotel pickup?', 'Talk to a person']
+  },
+  generales: {
+    es: ['Quiero reservar', 'Ver tours y precios'],
+    en: ['Book a tour', 'Tours and prices']
+  }
+};
+
+const RE= {
+  humano: /(hablar con|con una persona|persona real|con alguien|humano|asesor|agente|talk to|real person|human|agent|someone)/i,
+  reservar: /(reserv|book|apart|disponib|availab|cupo|espacio para)/i,
+  precios: /(precio|cu[aá]nto|cost|price|how much|tarifa|ver (los |otros )?tours|other tours|qu[eé] tours|which tours|lista de tours|actividad|options|ofrecen|what do you)/i,
+  pago: /(pago|pagar|sinpe|tarjeta|card|pay|efectivo|cash)/i,
+  pickup: /(pickup|pick up|pick-up|recog|transporte|transport|traslado|shuttle|hotel|meeting point|punto de encuentro|d[oó]nde (es|salen|nos)|where)/i,
+  cancelar: /(cancel|reembolso|refund|llueve|lluvia|rain|clima|weather)/i,
+  edades: /(niñ|ninos|child|kid|edad|age|años|years old|beb[eé]|baby)/i,
+  incluye: /(incluye|incluido|include|llevar|bring|ropa|wear)/i,
+  horario: /(horario|a qu[eé] hora|what time|schedule|salida|empieza|start)/i,
+  saludo: /^(hola|buenas|buenos|hi|hello|hey|good (morning|afternoon|evening)|pura vida)/i,
+  gracias: /(gracias|thank|thx)/i,
+  salir: /^(cancelar|cancel|salir|exit|stop)$/i,
+  confirmar: /^(s[ií]|yes|dale|ok|okay|confirm|env[ií]a|enviar|send)/i,
+  sinPickup: /(sin pickup|no pickup|no necesito|not needed|none|ninguno)/i,
+  pistaPersonas: /(adult|persona|people|pax|niñ|kid|child|somos|we are)/i
+};
+const RE_EN= /(?<![\p{L}])(hi|hello|hey|how|much|price|prices|book|booking|tomorrow|people|adults?|kids?|children|what|when|where|thanks|thank|please|available|can|do|you|the|is|are|for|talk|someone|want|need|we|our|my)(?![\p{L}])/giu;
+const RE_ES= /(?<![\p{L}])(hola|buenas|precio|precios|cuánto|cuanto|cuesta|reservar|reserva|mañana|personas?|adultos?|niños?|niñas?|recogen|qué|que|cuándo|cuando|dónde|donde|gracias|favor|para|el|la|los|las|es|son|hay|quiero|tienen|con|una?|somos|necesito|ocupo)(?![\p{L}])/giu;
+const NUM= { un: 1, uno: 1, una: 1, one: 1, dos: 2, two: 2, tres: 3, three: 3, cuatro: 4, four: 4, cinco: 5, five: 5, seis: 6, six: 6, siete: 7, seven: 7, ocho: 8, eight: 8 };
+const DIAS= { domingo: 0, sunday: 0, lunes: 1, monday: 1, martes: 2, tuesday: 2, 'miércoles': 3, miercoles: 3, wednesday: 3, jueves: 4, thursday: 4, viernes: 5, friday: 5, 'sábado': 6, sabado: 6, saturday: 6 };
+const MESES= { ene: 0, jan: 0, feb: 1, mar: 2, abr: 3, apr: 3, may: 4, jun: 5, jul: 6, ago: 7, aug: 7, sep: 8, set: 8, oct: 9, nov: 10, dic: 11, dec: 11 };
+
+const $= (id)=> document.getElementById(id);
+const log= $('log');
+const chipsBox= $('chips');
+const input= $('msg');
+const angosto= window.matchMedia('(max-width: 860px)');
+
+let lang= 'es';
+let modo= 'libre';
+let paso= null;
+let reserva= {};
+let ultimoTour= null;
+let ultimos= [];
+let tabActiva= 'chat';
+let sinLeer= 0;
+let cuenta= { resp: 0, sol: 0, hum: 0 };
+let filas= [];
+let avisos= [];
+let gen= 0;
+let cola= Promise.resolve();
+
+const t= (obj)=> obj[lang];
+const fmtHora= (d)=> d.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit', hour12: false });
+const fmtFecha= (d, idioma)=> new Intl.DateTimeFormat(idioma=== 'en'? 'en-US': 'es-CR', { weekday: 'short', day: 'numeric', month: 'short' }).format(d);
+const enDias= (n)=> {
+  const d= new Date();
+  d.setDate(d.getDate()+ n);
+  return fmtFecha(d, 'es');
+};
+
+const filasEjemplo= ()=> [
+  { fecha: enDias(3), tour: 'Puentes Colgantes', personas: '2 adultos', nombre: 'Emily R.', pickup: 'Hotel en el centro', total: 90, estado: 'ok', ejemplo: true },
+  { fecha: enDias(4), tour: 'Caminata Nocturna', personas: '2 adultos y 2 niños', nombre: 'Familia Mora', pickup: 'Sin pickup', total: 130, estado: 'wait', ejemplo: true }
+];
+const avisosEjemplo= ()=> [
+  { hora: '06:12', texto: 'Nueva solicitud: Caminata Nocturna, 2 adultos y 2 niños (ejemplo).', nuevo: false },
+  { hora: '02:47', texto: 'Consulta respondida de madrugada: precio del rafting (ejemplo).', nuevo: false }
+];
+
+const pintarTexto= (cont, texto)=> {
+  texto.split('\n').forEach((linea, i)=> {
+    if(i> 0) cont.appendChild(document.createElement('br'));
+    linea.split('*').forEach((trozo, j)=> {
+      if(!trozo) return;
+      if(j% 2=== 1) {
+        const b= document.createElement('strong');
+        b.textContent= trozo;
+        cont.appendChild(b);
+      } else {
+        cont.appendChild(document.createTextNode(trozo));
+      }
+    });
+  });
+};
+
+const agregarMensaje= (quien, texto)=> {
+  const burbuja= document.createElement('div');
+  burbuja.className= 'msg '+ quien;
+  const cuerpo= document.createElement('div');
+  pintarTexto(cuerpo, texto);
+  const hora= document.createElement('time');
+  hora.textContent= fmtHora(new Date());
+  burbuja.append(cuerpo, hora);
+  log.appendChild(burbuja);
+  log.scrollTop= log.scrollHeight;
+};
+
+const ponerChips= (lista)=> {
+  chipsBox.replaceChildren();
+  lista.forEach((etiqueta)=> {
+    const b= document.createElement('button');
+    b.type= 'button';
+    b.textContent= etiqueta;
+    b.addEventListener('click', ()=> recibir(etiqueta));
+    chipsBox.appendChild(b);
+  });
+  chipsBox.hidden= lista.length=== 0;
+};
+
+const responder= (texto, chips)=> {
+  const g= gen;
+  cola= cola.then(()=> new Promise((listo)=> {
+    if(g!== gen) {
+      listo();
+      return;
+    }
+    const escribiendo= document.createElement('div');
+    escribiendo.className= 'typing';
+    escribiendo.setAttribute('aria-label', lang=== 'es'? 'Escribiendo': 'Typing');
+    for(let i= 0; i< 3; i+= 1) escribiendo.appendChild(document.createElement('i'));
+    log.appendChild(escribiendo);
+    log.scrollTop= log.scrollHeight;
+    const espera= Math.min(1400, 450+ texto.length* 6);
+    setTimeout(()=> {
+      escribiendo.remove();
+      if(g=== gen) {
+        agregarMensaje('bot', texto);
+        ponerChips(chips|| []);
+        cuenta.resp+= 1;
+        pintarCuentas();
+      }
+      listo();
+    }, espera);
+  }));
+};
+
+const luego= (fn)=> {
+  const g= gen;
+  cola= cola.then(()=> {
+    if(g=== gen) fn();
+  });
+};
+
+const pintarCuentas= ()=> {
+  $('k-resp').textContent= cuenta.resp;
+  $('k-sol').textContent= cuenta.sol;
+  $('k-hum').textContent= cuenta.hum;
+};
+
+const pintarAvisos= ()=> {
+  const feed= $('feed');
+  feed.replaceChildren();
+  avisos.slice(0, 6).forEach((a)=> {
+    const li= document.createElement('li');
+    if(a.nuevo) li.className= 'new';
+    const hora= document.createElement('time');
+    hora.textContent= a.hora;
+    const texto= document.createElement('span');
+    texto.textContent= a.texto;
+    li.append(hora, texto);
+    feed.appendChild(li);
+  });
+};
+
+const pintarFilas= ()=> {
+  const cuerpo= $('rows');
+  cuerpo.replaceChildren();
+  filas.forEach((f)=> {
+    const tr= document.createElement('tr');
+    [f.fecha, f.tour, f.personas, f.nombre, f.pickup].forEach((valor, i)=> {
+      const td= document.createElement('td');
+      td.textContent= valor;
+      if(i=== 3&& f.ejemplo) {
+        const tag= document.createElement('span');
+        tag.className= 'tag';
+        tag.textContent= 'ejemplo';
+        td.appendChild(tag);
+      }
+      tr.appendChild(td);
+    });
+    const total= document.createElement('td');
+    total.className= 'num';
+    total.textContent= '$'+ f.total;
+    const est= document.createElement('td');
+    const pill= document.createElement('span');
+    pill.className= 'pill '+ f.estado;
+    pill.textContent= f.estado=== 'ok'? 'Confirmada': 'Por confirmar';
+    est.appendChild(pill);
+    tr.append(total, est);
+    cuerpo.appendChild(tr);
+  });
+};
+
+const avisar= (texto)=> {
+  avisos.forEach((a)=> {
+    a.nuevo= false;
+  });
+  avisos.unshift({ hora: fmtHora(new Date()), texto, nuevo: true });
+  pintarAvisos();
+  if(angosto.matches&& tabActiva=== 'chat') {
+    sinLeer+= 1;
+    $('badge').textContent= sinLeer;
+    $('badge').hidden= false;
+  }
+};
+
+const aplicarTabs= ()=> {
+  const corto= angosto.matches;
+  $('pane-chat').hidden= corto&& tabActiva!== 'chat';
+  $('pane-owner').hidden= corto&& tabActiva!== 'owner';
+  $('tab-chat').setAttribute('aria-selected', String(tabActiva=== 'chat'));
+  $('tab-owner').setAttribute('aria-selected', String(tabActiva=== 'owner'));
+};
+
+const irA= (tab)=> {
+  tabActiva= tab;
+  if(tab=== 'owner') {
+    sinLeer= 0;
+    $('badge').hidden= true;
+  }
+  aplicarTabs();
+};
+
+const ponerIdioma= (nuevo)=> {
+  lang= nuevo;
+  $('lang-es').setAttribute('aria-pressed', String(nuevo=== 'es'));
+  $('lang-en').setAttribute('aria-pressed', String(nuevo=== 'en'));
+  $('status').textContent= UI[nuevo].estado;
+  input.placeholder= UI[nuevo].placeholder;
+  $('send').textContent= UI[nuevo].enviar;
+};
+
+const contar= (re, s)=> (s.match(re)|| []).length;
+const detectarIdioma= (s)=> {
+  const en= contar(RE_EN, s);
+  const es= contar(RE_ES, s);
+  if(en> es) return 'en';
+  if(es> en) return 'es';
+  return null;
+};
+
+const buscarTour= (texto)=> {
+  const s= texto.toLowerCase();
+  return NEGOCIO.tours.find((x)=> x.claves.some((k)=> s.includes(k))|| s.includes(x.nombre.es.toLowerCase())|| s.includes(x.nombre.en.toLowerCase()))|| null;
+};
+
+const leerFecha= (texto)=> {
+  const s= texto.toLowerCase();
+  const hoy= new Date();
+  const base= new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  let d= null;
+  const numerica= s.match(/(\d{1,2})\s*[\/.-]\s*(\d{1,2})/);
+  const conMes= s.match(/(\d{1,2})\s*(?:de\s+)?(ene|jan|feb|mar|abr|apr|may|jun|jul|ago|aug|sep|set|oct|nov|dic|dec)/);
+  const mesPrimero= s.match(/(ene|jan|feb|mar|abr|apr|may|jun|jul|ago|aug|sep|set|oct|nov|dic|dec)[a-z]*\.?\s+(\d{1,2})/);
+  const dia= Object.keys(DIAS).find((k)=> s.includes(k));
+  const armar= (dd, mm)=> {
+    if(dd< 1|| dd> 31|| mm< 0|| mm> 11) return null;
+    const f= new Date(hoy.getFullYear(), mm, dd);
+    if(f< base) f.setFullYear(hoy.getFullYear()+ 1);
+    return f;
+  };
+  if(/pasado mañana|pasado manana|day after tomorrow/.test(s)) {
+    d= new Date(base);
+    d.setDate(base.getDate()+ 2);
+  } else if(numerica) {
+    d= armar(Number(numerica[1]), Number(numerica[2])- 1);
+  } else if(conMes) {
+    d= armar(Number(conMes[1]), MESES[conMes[2]]);
+  } else if(mesPrimero) {
+    d= armar(Number(mesPrimero[2]), MESES[mesPrimero[1]]);
+  } else if(dia) {
+    d= new Date(base);
+    d.setDate(base.getDate()+ ((DIAS[dia]- base.getDay()+ 7)% 7|| 7));
+  } else if(/mañana|manana|tomorrow/.test(s)) {
+    d= new Date(base);
+    d.setDate(base.getDate()+ 1);
+  } else if(/(?<![\p{L}])hoy(?![\p{L}])|today|tonight|esta noche/u.test(s)) {
+    d= new Date(base);
+  }
+  if(!d) return null;
+  return { texto: fmtFecha(d, lang), dueno: fmtFecha(d, 'es') };
+};
+
+const leerPersonas= (texto)=> {
+  const s= texto.toLowerCase()
+    .replace(/\d{1,2}\s*[\/.-]\s*\d{1,2}/g, ' ')
+    .replace(/\d{1,2}\s*(de\s+)?(ene|jan|feb|abr|apr|jun|jul|ago|aug|sep|set|oct|nov|dic|dec)\p{L}*/gu, ' ');
+  const patron= /(?<![\p{L}\d])(\d+|un|uno|una|one|dos|two|tres|three|cuatro|four|cinco|five|seis|six|siete|seven|ocho|eight)(?![\p{L}\d])\s*(adult\p{L}*|persona\p{L}*|people|pax|niñ\p{L}*|nin\p{L}*|kid\p{L}*|child\p{L}*|menor\p{L}*)?/gu;
+  let adultos= 0;
+  let ninos= 0;
+  let m= patron.exec(s);
+  while(m!== null) {
+    const n= /^\d+$/.test(m[1])? Number(m[1]): (NUM[m[1]]|| 0);
+    const tipo= m[2]|| '';
+    if(/^(niñ|nin|kid|child|menor)/.test(tipo)) ninos+= n;
+    else adultos+= n;
+    m= patron.exec(s);
+  }
+  if(adultos+ ninos=== 0|| adultos+ ninos> 40) return null;
+  return { a: adultos, n: ninos };
+};
+
+const textoPersonas= (p, idioma)=> {
+  const partes= [];
+  if(p.a> 0) partes.push(idioma=== 'es'? `${p.a} ${p.a=== 1? 'adulto': 'adultos'}`: `${p.a} ${p.a=== 1? 'adult': 'adults'}`);
+  if(p.n> 0) partes.push(idioma=== 'es'? `${p.n} ${p.n=== 1? 'niño': 'niños'}`: `${p.n} ${p.n=== 1? 'child': 'children'}`);
+  return partes.join(idioma=== 'es'? ' y ': ' and ');
+};
+
+const calcularTotal= (r)=> r.personas.a* r.tour.precio+ r.personas.n* (r.tour.precioNino=== null? r.tour.precio: r.tour.precioNino);
+
+const listaTours= ()=> {
+  const lineas= NEGOCIO.tours.map((x)=> lang=== 'es'
+    ? `• *${x.nombre.es}*: ${x.duracion.es}, $${x.precio} adulto${x.precioNino=== null? '': `, $${x.precioNino} niño`}`
+    : `• *${x.nombre.en}*: ${x.duracion.en}, $${x.precio} adult${x.precioNino=== null? '': `, $${x.precioNino} child`}`);
+  const cabeza= lang=== 'es'? 'Estos son nuestros tours. Precios por persona en dólares, IVA incluido:': 'Here are our tours. Prices per person in USD, tax included:';
+  const pie= lang=== 'es'? '¿Cuál te interesa?': 'Which one interests you?';
+  responder([cabeza, ...lineas, pie].join('\n'), NEGOCIO.tours.map((x)=> t(x.nombre)));
+};
+
+const detalleTour= (x)=> {
+  ultimoTour= x;
+  const nino= x.precioNino=== null
+    ? (lang=== 'es'? 'sin tarifa de niño': 'no child rate')
+    : (lang=== 'es'? `$${x.precioNino} niño`: `$${x.precioNino} child`);
+  const texto= lang=== 'es'
+    ? `*${x.nombre.es}*\nDuración: ${x.duracion.es} · Salida: ${x.salida.es}\nPrecio por persona: $${x.precio} adulto, ${nino} (${x.edad.es})\nIncluye: ${x.incluye.es}\nLleva: ${x.llevar.es}\n¿Te lo reservo?`
+    : `*${x.nombre.en}*\nDuration: ${x.duracion.en} · Departs: ${x.salida.en}\nPrice per person: $${x.precio} adult, ${nino} (${x.edad.en})\nIncludes: ${x.incluye.en}\nBring: ${x.llevar.en}\nShall I book it for you?`;
+  responder(texto, lang=== 'es'? ['Reservar este tour', 'Ver otros tours']: ['Book this tour', 'Other tours']);
+};
+
+const edades= ()=> {
+  const lineas= NEGOCIO.tours.map((x)=> {
+    const nino= x.precioNino=== null? (lang=== 'es'? 'tarifa de adulto': 'adult rate'): `$${x.precioNino}`;
+    return `• *${t(x.nombre)}*: ${t(x.edad)} (${nino})`;
+  });
+  const cabeza= lang=== 'es'? 'Edades y tarifa de niño por tour:': 'Ages and child rate by tour:';
+  responder([cabeza, ...lineas].join('\n'), t(TXT.generales));
+};
+
+const horarios= ()=> {
+  const lineas= NEGOCIO.tours.map((x)=> `• *${t(x.nombre)}*: ${t(x.salida)}`);
+  const cabeza= lang=== 'es'? 'Horarios de salida:': 'Departure times:';
+  responder([cabeza, ...lineas].join('\n'), t(TXT.generales));
+};
+
+const pasarAPersona= ()=> {
+  modo= 'libre';
+  reserva= {};
+  const ultimo= ultimos.slice(-2).join(' / ');
+  responder(lang=== 'es'
+    ? `Te paso con ${NEGOCIO.asesor}, del equipo. Responde ${NEGOCIO.horario.es}; si es de noche, te escribe a primera hora. Le dejé tu consulta para que no tengas que repetirla.`
+    : `I'm passing you to ${NEGOCIO.asesor} from our team. She replies ${NEGOCIO.horario.en}; at night she'll write first thing in the morning. I left her your question so you don't have to repeat it.`, []);
+  luego(()=> {
+    cuenta.hum+= 1;
+    pintarCuentas();
+    avisar(`Turista pide hablar con una persona. Últimos mensajes: "${ultimo.slice(0, 120)}"`);
+  });
+};
+
+const noSe= (texto)=> {
+  responder(lang=== 'es'
+    ? 'No tengo esa información todavía. ¿Quieres que te pase con una persona del equipo?'
+    : `I don't have that information yet. Want me to pass you to someone on our team?`, lang=== 'es'? ['Sí, hablar con una persona', 'Ver tours y precios']: ['Yes, talk to someone', 'Tours and prices']);
+  luego(()=> avisar(`Pregunta sin respuesta, para agregarla al asistente: "${texto.slice(0, 80)}"`));
+};
+
+const pasos= ['tour', 'fecha', 'personas', 'nombre', 'hotel'];
+
+const preguntar= ()=> {
+  paso= pasos.find((p)=> reserva[p]=== undefined)|| 'confirmar';
+  if(paso=== 'tour') {
+    responder(lang=== 'es'? '¿Qué tour quieres reservar?': 'Which tour would you like to book?', NEGOCIO.tours.map((x)=> t(x.nombre)));
+  } else if(paso=== 'fecha') {
+    responder(lang=== 'es'? `Perfecto: *${reserva.tour.nombre.es}*. ¿Para qué fecha?`: `Great: *${reserva.tour.nombre.en}*. What date?`, lang=== 'es'? ['Mañana', 'Pasado mañana', 'Este sábado']: ['Tomorrow', 'Day after tomorrow', 'This Saturday']);
+  } else if(paso=== 'personas') {
+    responder(lang=== 'es'? '¿Cuántas personas? Por ejemplo: 2 adultos y 1 niño.': 'How many people? For example: 2 adults and 1 child.', lang=== 'es'? ['2 adultos', '2 adultos y 2 niños', '4 adultos']: ['2 adults', '2 adults and 2 kids', '4 adults']);
+  } else if(paso=== 'nombre') {
+    responder(lang=== 'es'? '¿A nombre de quién hago la solicitud?': 'What name should I put on the request?', []);
+  } else if(paso=== 'hotel') {
+    responder(lang=== 'es'? '¿En qué hotel te recogemos? Si no ocupas transporte, toca "Sin pickup".': `Which hotel should we pick you up from? If you don't need a ride, tap "No pickup".`, lang=== 'es'? ['Sin pickup']: ['No pickup']);
+  } else {
+    const r= reserva;
+    const total= calcularTotal(r);
+    const notaEdad= r.tour.precioNino=== null&& r.personas.n> 0
+      ? (lang=== 'es'? `\nOjo: este tour es ${r.tour.edad.es}.`: `\nNote: this tour is for ${r.tour.edad.en}.`)
+      : '';
+    const resumen= lang=== 'es'
+      ? `Reviso tu solicitud:\n*${r.tour.nombre.es}*\nFecha: ${r.fecha.texto}\nPersonas: ${textoPersonas(r.personas, 'es')}\nNombre: ${r.nombre}\nPickup: ${r.hotel}\nTotal estimado del tour: $${total}${notaEdad}\n¿La envío al equipo?`
+      : `Here's your request:\n*${r.tour.nombre.en}*\nDate: ${r.fecha.texto}\nPeople: ${textoPersonas(r.personas, 'en')}\nName: ${r.nombre}\nPickup: ${r.hotel}\nEstimated tour total: $${total}${notaEdad}\nShall I send it to the team?`;
+    responder(resumen, lang=== 'es'? ['Sí, enviar solicitud', 'Cambiar algo']: ['Yes, send it', 'Change something']);
+  }
+};
+
+const iniciarReserva= (texto)=> {
+  modo= 'reserva';
+  reserva= {};
+  const tour= buscarTour(texto)|| (/(este|this) tour/i.test(texto)? ultimoTour: null);
+  if(tour) reserva.tour= tour;
+  const fecha= leerFecha(texto);
+  if(fecha) reserva.fecha= fecha;
+  if(RE.pistaPersonas.test(texto)) {
+    const gente= leerPersonas(texto);
+    if(gente) reserva.personas= gente;
+  }
+  preguntar();
+};
+
+const enviarSolicitud= ()=> {
+  const r= reserva;
+  const total= calcularTotal(r);
+  modo= 'libre';
+  reserva= {};
+  responder(lang=== 'es'
+    ? `¡Listo, ${r.nombre}! Envié tu solicitud. ${NEGOCIO.asesor}, del equipo, te confirma el espacio y te manda el link de pago (respondemos ${NEGOCIO.horario.es}). Si estás en Costa Rica, también puedes pagar por SINPE Móvil.`
+    : `Done, ${r.nombre}! I sent your request. ${NEGOCIO.asesor} from our team will confirm your spot and send you the payment link (we reply ${NEGOCIO.horario.en}).`, lang=== 'es'? ['Ver otros tours', 'Formas de pago']: ['Other tours', 'Payment options']);
+  luego(()=> {
+    filas.unshift({ fecha: r.fecha.dueno, tour: r.tour.nombre.es, personas: textoPersonas(r.personas, 'es'), nombre: r.nombre, pickup: r.hotel, total, estado: 'wait', ejemplo: false });
+    pintarFilas();
+    cuenta.sol+= 1;
+    pintarCuentas();
+    avisar(`Nueva solicitud: ${r.tour.nombre.es}, ${textoPersonas(r.personas, 'es')}, ${r.fecha.dueno}. A nombre de ${r.nombre}. Pickup: ${r.hotel}.`);
+  });
+};
+
+const pasoReserva= (texto)=> {
+  if(RE.salir.test(texto)) {
+    modo= 'libre';
+    reserva= {};
+    responder(lang=== 'es'? 'Listo, dejé la reserva de lado. ¿Te ayudo con algo más?': 'No problem, I dropped the booking. Anything else I can help with?', t(TXT.inicio));
+    return;
+  }
+  if(paso=== 'tour') {
+    const tour= buscarTour(texto);
+    if(!tour) {
+      responder(lang=== 'es'? 'No reconocí ese tour. Elige uno de estos:': `I didn't catch which tour. Pick one of these:`, NEGOCIO.tours.map((x)=> t(x.nombre)));
+      return;
+    }
+    reserva.tour= tour;
+  } else if(paso=== 'fecha') {
+    reserva.fecha= leerFecha(texto)|| { texto: texto.slice(0, 40), dueno: texto.slice(0, 40) };
+  } else if(paso=== 'personas') {
+    const gente= leerPersonas(texto);
+    if(!gente) {
+      responder(lang=== 'es'? 'No entendí cuántas personas son. Escríbelo con números, por ejemplo: 3 adultos.': `I didn't get how many people. Use numbers, for example: 3 adults.`, []);
+      return;
+    }
+    reserva.personas= gente;
+  } else if(paso=== 'nombre') {
+    reserva.nombre= texto.replace(/^(me llamo|mi nombre es|soy|my name is|i am|i'm)\s+/i, '').slice(0, 40);
+  } else if(paso=== 'hotel') {
+    reserva.hotel= RE.sinPickup.test(texto)? (lang=== 'es'? 'Sin pickup': 'No pickup'): texto.slice(0, 50);
+  } else if(paso=== 'confirmar') {
+    if(RE.confirmar.test(texto)) {
+      enviarSolicitud();
+    } else {
+      reserva= {};
+      responder(lang=== 'es'? 'Claro, empecemos de nuevo.': `Sure, let's start over.`, []);
+      preguntar();
+    }
+    return;
+  }
+  preguntar();
+};
+
+const recibir= (bruto)=> {
+  const texto= bruto.trim();
+  if(!texto) return;
+  agregarMensaje('user', texto);
+  ponerChips([]);
+  ultimos.push(texto);
+  const pasoLibre= !(modo=== 'reserva'&& (paso=== 'nombre'|| paso=== 'hotel'));
+  if(pasoLibre) {
+    const idioma= detectarIdioma(texto);
+    if(idioma&& idioma!== lang) ponerIdioma(idioma);
+  }
+  if(RE.humano.test(texto)) {
+    pasarAPersona();
+    return;
+  }
+  if(modo=== 'reserva') {
+    pasoReserva(texto);
+    return;
+  }
+  const tour= buscarTour(texto);
+  if(RE.reservar.test(texto)) {
+    iniciarReserva(texto);
+  } else if(tour) {
+    detalleTour(tour);
+  } else if(RE.pago.test(texto)) {
+    responder(t(NEGOCIO.pago), t(TXT.generales));
+  } else if(RE.cancelar.test(texto)) {
+    responder(t(NEGOCIO.cancelacion), t(TXT.generales));
+  } else if(RE.pickup.test(texto)) {
+    responder(t(NEGOCIO.pickup), t(TXT.generales));
+  } else if(RE.edades.test(texto)) {
+    edades();
+  } else if(RE.incluye.test(texto)) {
+    responder(lang=== 'es'? '¿De cuál tour? Te digo qué incluye y qué llevar.': 'Which tour? I will tell you what is included and what to bring.', NEGOCIO.tours.map((x)=> t(x.nombre)));
+  } else if(RE.horario.test(texto)) {
+    horarios();
+  } else if(RE.precios.test(texto)) {
+    listaTours();
+  } else if(RE.gracias.test(texto)&& texto.length< 30) {
+    responder(lang=== 'es'? '¡Con gusto! Pura vida.': `You're welcome! Pura vida.`, t(TXT.inicio));
+  } else if(RE.saludo.test(texto)) {
+    responder(lang=== 'es'? '¡Hola! ¿En qué te ayudo? Puedo darte tours y precios, o tomar una solicitud de reserva.': 'Hi! How can I help? I can share tours and prices, or take a booking request.', t(TXT.inicio));
+  } else {
+    noSe(texto);
+  }
+};
+
+const iniciarChat= ()=> {
+  gen+= 1;
+  cola= Promise.resolve();
+  modo= 'libre';
+  reserva= {};
+  paso= null;
+  ultimoTour= null;
+  ultimos= [];
+  log.replaceChildren();
+  const aviso= document.createElement('div');
+  aviso.className= 'disclosure';
+  aviso.textContent= UI[lang].aviso;
+  log.appendChild(aviso);
+  agregarMensaje('bot', t(TXT.bienvenida));
+  ponerChips(t(TXT.inicio));
+};
+
+const reiniciar= ()=> {
+  filas= filasEjemplo();
+  avisos= avisosEjemplo();
+  cuenta= { resp: 0, sol: 0, hum: 0 };
+  sinLeer= 0;
+  $('badge').hidden= true;
+  pintarFilas();
+  pintarAvisos();
+  pintarCuentas();
+  iniciarChat();
+};
+
+const cambiarIdioma= (nuevo)=> {
+  if(nuevo=== lang) return;
+  ponerIdioma(nuevo);
+  iniciarChat();
+};
+
+$('composer').addEventListener('submit', (e)=> {
+  e.preventDefault();
+  const valor= input.value;
+  input.value= '';
+  recibir(valor);
+});
+$('lang-es').addEventListener('click', ()=> cambiarIdioma('es'));
+$('lang-en').addEventListener('click', ()=> cambiarIdioma('en'));
+$('reset').addEventListener('click', reiniciar);
+$('tab-chat').addEventListener('click', ()=> irA('chat'));
+$('tab-owner').addEventListener('click', ()=> irA('owner'));
+angosto.addEventListener('change', aplicarTabs);
+
+ponerIdioma('es');
+reiniciar();
+aplicarTabs();
+</script>
+</body>
+</html>

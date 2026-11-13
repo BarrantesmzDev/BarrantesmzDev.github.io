@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Asistente Clínica Dental Guarumo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #EDF1F6;
+  --surface: #FFFFFF;
+  --surface-2: #F3F6FA;
+  --chat-bg: #E2E8F0;
+  --ink: #141C27;
+  --muted: #556274;
+  --line: #D2DAE4;
+  --accent: #1F5FAD;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DCE7F6;
+  --bubble-bot: #FFFFFF;
+  --bubble-user: #1F5FAD;
+  --bubble-user-ink: #FFFFFF;
+  --amber: #955700;
+  --amber-soft: #FBEACB;
+  --red: #B42318;
+  --red-soft: #FDE4E1;
+  --ok: #166B37;
+  --ok-soft: #DAF0E2;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D121A;
+    --surface: #151C27;
+    --surface-2: #1A2230;
+    --chat-bg: #10161F;
+    --ink: #E3E9F2;
+    --muted: #98A5B8;
+    --line: #283244;
+    --accent: #6AA6F0;
+    --accent-ink: #06182E;
+    --accent-soft: #1A2D47;
+    --bubble-bot: #1B2432;
+    --bubble-user: #2A5A96;
+    --bubble-user-ink: #EEF4FC;
+    --amber: #F2B65A;
+    --amber-soft: #392A10;
+    --red: #FF8A7A;
+    --red-soft: #3A1714;
+    --ok: #62CE8A;
+    --ok-soft: #123020;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D121A;
+  --surface: #151C27;
+  --surface-2: #1A2230;
+  --chat-bg: #10161F;
+  --ink: #E3E9F2;
+  --muted: #98A5B8;
+  --line: #283244;
+  --accent: #6AA6F0;
+  --accent-ink: #06182E;
+  --accent-soft: #1A2D47;
+  --bubble-bot: #1B2432;
+  --bubble-user: #2A5A96;
+  --bubble-user-ink: #EEF4FC;
+  --amber: #F2B65A;
+  --amber-soft: #392A10;
+  --red: #FF8A7A;
+  --red-soft: #3A1714;
+  --ok: #62CE8A;
+  --ok-soft: #123020;
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+header.top { padding-block: 24px 16px; }
+header.top .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.brand h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.lede {
+  margin: 8px 0 0;
+  max-width: 60ch;
+  color: var(--muted);
+}
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.seg button {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 13px var(--font-body);
+  cursor: pointer;
+}
+.seg button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.btn-ghost {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 500 13px var(--font-body);
+  cursor: pointer;
+}
+.tabs { display: none; }
+main.stage .wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  padding-block: 0 24px;
+}
+.phone {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: clamp(540px, 76vh, 760px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--chat-bg);
+}
+.chat-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: 700 14px var(--font-display);
+}
+.chat-head strong { display: block; font-size: 15px; }
+.chat-head span { font-size: 12.5px; color: var(--muted); }
+.log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+.disclosure {
+  align-self: center;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+}
+.msg {
+  max-width: 86%;
+  padding: 9px 12px 6px;
+  border-radius: 14px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.msg.bot {
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  border-top-left-radius: 4px;
+  background: var(--bubble-bot);
+}
+.msg.user {
+  align-self: flex-end;
+  border-top-right-radius: 4px;
+  background: var(--bubble-user);
+  color: var(--bubble-user-ink);
+}
+.msg time {
+  display: block;
+  margin-top: 2px;
+  text-align: right;
+  font-size: 11px;
+  opacity: 0.72;
+  font-variant-numeric: tabular-nums;
+}
+.typing {
+  align-self: flex-start;
+  display: flex;
+  gap: 4px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bubble-bot);
+}
+.typing i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: blink 1s infinite;
+}
+.typing i:nth-child(2) { animation-delay: 0.15s; }
+.typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 96px;
+  padding: 8px 12px 0;
+  overflow-y: auto;
+}
+.chips button {
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: var(--surface);
+  color: var(--accent);
+  font: 500 13px var(--font-body);
+  cursor: pointer;
+}
+.composer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 12px;
+}
+.composer input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 15px var(--font-body);
+}
+.composer button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0 18px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 600 14px var(--font-body);
+  cursor: pointer;
+}
+.owner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+}
+.owner h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.2;
+}
+.owner h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.kpi {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.kpi b {
+  display: block;
+  font: 700 26px var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.kpi span { font-size: 12.5px; color: var(--muted); }
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.feed li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 14px;
+}
+.feed li.new {
+  border-color: var(--amber);
+  background: var(--amber-soft);
+}
+.feed time {
+  padding-top: 1px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.tablewrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+th, td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+th {
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+tbody tr:last-child td { border-bottom: 0; }
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pill.wait { background: var(--amber-soft); color: var(--amber); }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.tag {
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--amber);
+  color: var(--surface);
+  font-size: 11px;
+  font-weight: 700;
+}
+.note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+footer {
+  padding-block: 8px 32px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+@media (max-width: 860px) {
+  .tabs {
+    display: flex;
+    gap: 8px;
+  }
+  .tabs button {
+    flex: 1;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: var(--surface);
+    color: var(--muted);
+    font: 600 14px var(--font-body);
+    cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] {
+    border-color: var(--accent);
+    color: var(--ink);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+  main.stage .wrap {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .phone {
+    height: max(460px, calc(100vh - 250px));
+    height: max(460px, calc(100dvh - 250px));
+  }
+}
+@media (max-width: 480px) {
+  .kpi b { font-size: 22px; }
+  .kpi { padding: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .typing i { animation: none; opacity: 0.6; }
+  .log { scroll-behavior: auto; }
+}
+#pane-owner th, #pane-owner td { padding: 9px 8px; }
+#pane-owner table { min-width: 600px; }
+#pane-owner td:nth-child(2), #pane-owner td:nth-child(3), #pane-owner td:nth-child(4) { white-space: normal; min-width: 80px; }
+.feed li.urgent {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+.feed li.urgent span { color: var(--ink); }
+.pill.urg { background: var(--red-soft); color: var(--red); }
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <p class="eyebrow">Negocio ficticio · demo</p>
+      <h1>Clínica Dental Guarumo</h1>
+      <p class="lede">Escríbele como paciente, en español o en inglés. Al lado ves lo que le llega a la clínica.</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Idioma del asistente">
+        <button type="button" id="lang-es" aria-pressed="true">ES</button>
+        <button type="button" id="lang-en" aria-pressed="false">EN</button>
+      </div>
+      <button type="button" class="btn-ghost" id="reset">Reiniciar</button>
+    </div>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="wrap">
+    <div class="tabs" role="tablist" aria-label="Paneles">
+      <button type="button" role="tab" id="tab-chat" aria-selected="true" aria-controls="pane-chat">Chat del paciente</button>
+      <button type="button" role="tab" id="tab-owner" aria-selected="false" aria-controls="pane-owner">Vista de la clínica<span class="badge" id="badge" hidden>0</span></button>
+    </div>
+
+    <section class="phone" id="pane-chat" aria-label="Chat del paciente">
+      <div class="chat-head">
+        <div class="avatar" aria-hidden="true">DG</div>
+        <div>
+          <strong>Clínica Dental Guarumo</strong>
+          <span id="status">Asistente virtual · responde al instante</span>
+        </div>
+      </div>
+      <div class="log" id="log" role="log" aria-live="polite"></div>
+      <div class="chips" id="chips"></div>
+      <form class="composer" id="composer" autocomplete="off">
+        <label class="sr" for="msg">Mensaje</label>
+        <input id="msg" name="msg" type="text" placeholder="Escribe como paciente…" maxlength="300">
+        <button type="submit" id="send">Enviar</button>
+      </form>
+    </section>
+
+    <section class="owner" id="pane-owner" aria-label="Vista de la clínica">
+      <div>
+        <h2>Vista de la clínica</h2>
+        <p class="sub">Lo que recibe la recepción mientras el asistente atiende.</p>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><b id="k-resp">0</b><span>respuestas en esta demo</span></div>
+        <div class="kpi"><b id="k-sol">0</b><span>citas nuevas</span></div>
+        <div class="kpi"><b id="k-hum">0</b><span>urgencias o piden una persona</span></div>
+      </div>
+      <div>
+        <h3>Avisos</h3>
+        <ul class="feed" id="feed"></ul>
+      </div>
+      <div>
+        <h3>Agenda de citas</h3>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr><th>Fecha</th><th>Hora</th><th>Servicio</th><th>Paciente</th><th>Tipo</th><th class="num">Precio ref.</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+      <p class="note">En el asistente real, la agenda es una hoja de Google o el calendario de la clínica, los avisos le llegan a recepción por WhatsApp y el recordatorio sale solo un día antes de cada cita. Las filas marcadas como ejemplo son de muestra.</p>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Demo con datos ficticios: la clínica, los servicios y los precios son de ejemplo. El asistente real usa IA, solo responde con la información que la clínica aprueba y no da diagnósticos. Demo preparada por <a href="/">José Andrés Barrantes</a>.</div>
+</footer>
+
+<script>
+const NEGOCIO= {
+  nombre: 'Clínica Dental Guarumo',
+  asesor: 'Mariela',
+  horario: { es: 'de lunes a viernes de 8 a. m. a 6 p. m. y sábados de 8 a. m. a 1 p. m.', en: 'Monday to Friday 8 a.m. to 6 p.m. and Saturdays 8 a.m. to 1 p.m.' },
+  servicios: [
+    {
+      id: 'valoracion',
+      claves: ['valora', 'revis', 'chequeo', 'check', 'consulta', 'exam', 'evaluac', 'evaluation'],
+      nombre: { es: 'Valoración general', en: 'General exam' },
+      duracion: { es: '30 minutos', en: '30 minutes' },
+      crc: 15000,
+      usd: 30,
+      detalle: { es: 'revisión completa y plan de tratamiento por escrito. Si haces el tratamiento con nosotros, se rebaja del total.', en: 'full check-up and a written treatment plan. If you do the treatment with us, it is deducted from the total.' }
+    },
+    {
+      id: 'limpieza',
+      claves: ['limp', 'clean', 'profilax'],
+      nombre: { es: 'Limpieza dental', en: 'Dental cleaning' },
+      duracion: { es: '45 minutos', en: '45 minutes' },
+      crc: 28000,
+      usd: 55,
+      detalle: { es: 'limpieza con ultrasonido, pulido y revisión rápida.', en: 'ultrasonic cleaning, polishing and a quick check-up.' }
+    },
+    {
+      id: 'blanqueamiento',
+      claves: ['blanq', 'whiten', 'blanco', 'white'],
+      nombre: { es: 'Blanqueamiento', en: 'Teeth whitening' },
+      duracion: { es: '1 hora y media', en: '1.5 hours' },
+      crc: 150000,
+      usd: 290,
+      detalle: { es: 'blanqueamiento en consultorio. Pide una limpieza reciente o una valoración antes.', en: 'in-office whitening. Requires a recent cleaning or an exam first.' }
+    },
+    {
+      id: 'ortodoncia',
+      claves: ['orto', 'bracket', 'frenill', 'braces', 'alineador', 'aligner'],
+      nombre: { es: 'Valoración de ortodoncia', en: 'Orthodontic consultation' },
+      duracion: { es: '40 minutos', en: '40 minutes' },
+      crc: 20000,
+      usd: 40,
+      detalle: { es: 'brackets o alineadores transparentes. Incluye fotos y plan con costo total.', en: 'braces or clear aligners. Includes photos and a plan with the full cost.' }
+    },
+    {
+      id: 'implantes',
+      claves: ['implant', 'corona', 'crown'],
+      nombre: { es: 'Valoración de implantes', en: 'Implant consultation' },
+      duracion: { es: '45 minutos', en: '45 minutes' },
+      crc: 35000,
+      usd: 70,
+      detalle: { es: 'incluye radiografía panorámica y presupuesto.', en: 'includes a panoramic X-ray and a quote.' }
+    }
+  ],
+  ubicacion: {
+    es: 'Estamos en San José, con parqueo propio para pacientes. Cuando la recepción confirma tu cita, te manda la ubicación de Waze.',
+    en: 'We are in San José, with free patient parking. When reception confirms your appointment, they send you the location on Waze or Google Maps.'
+  },
+  pago: {
+    es: 'Aceptamos tarjeta, SINPE Móvil y efectivo. Te damos factura electrónica por si tu seguro te reembolsa.',
+    en: 'We accept card and cash. We give you an itemized invoice in case your insurance reimburses you.'
+  },
+  cancelacion: {
+    es: 'Si necesitas cambiar o cancelar, avísanos con al menos 24 horas para darle el espacio a otro paciente. Un día antes te mandamos un recordatorio por aquí.',
+    en: 'If you need to change or cancel, please let us know at least 24 hours before so we can give the slot to another patient. We send you a reminder here one day before.'
+  },
+  llevar: {
+    es: 'Para la cita trae tu cédula o pasaporte y, si tienes, radiografías o exámenes recientes. Te recomendamos llegar 10 minutos antes la primera vez.',
+    en: 'Please bring your ID or passport and any recent X-rays if you have them. On your first visit, we suggest arriving 10 minutes early.'
+  },
+  salud: {
+    es: 'Por aquí no puedo darte un diagnóstico ni recomendarte medicamentos: eso lo ve la doctora en consulta. ¿Te agendo una valoración?',
+    en: `I can't give a diagnosis or recommend medication here; the dentist does that in person. Shall I book you an exam?`
+  }
+};
+
+const UI= {
+  es: { estado: 'Asistente virtual · responde al instante', placeholder: 'Escribe como paciente…', enviar: 'Enviar', aviso: 'Estás hablando con un asistente virtual' },
+  en: { estado: 'Virtual assistant · replies instantly', placeholder: 'Type as a patient…', enviar: 'Send', aviso: 'You are chatting with a virtual assistant' }
+};
+
+const TXT= {
+  bienvenida: {
+    es: '¡Hola! Soy el asistente virtual de la Clínica Dental Guarumo. Te ayudo con servicios, precios y citas, en español o en inglés. Si prefieres hablar con una persona, solo dime.',
+    en: `Hi! I'm the virtual assistant for Clínica Dental Guarumo. I can help with services, prices and appointments in English or Spanish. If you'd rather talk to a person, just let me know.`
+  },
+  inicio: {
+    es: ['Servicios y precios', 'Quiero una cita', 'Tengo dolor', 'Hablar con una persona'],
+    en: ['Services and prices', 'Book an appointment', 'I have tooth pain', 'Talk to a person']
+  },
+  generales: {
+    es: ['Quiero una cita', 'Servicios y precios'],
+    en: ['Book an appointment', 'Services and prices']
+  }
+};
+
+const RE= {
+  humano: /(hablar con|con una persona|persona real|con alguien|humano|asesor|recepci[oó]n|talk to|real person|human|someone|receptionist)/i,
+  urgencia: /(dolor|duele|hinchad|inflamad|sangr|golpe|quebr|se me (cay|rompi)|urgen|emergenc|pain|hurts|swollen|bleed|broke|cracked|chipped|urgent|emergency|toothache)/i,
+  reservar: /(cita|agend|reserv|appointment|book|turno|espacio|campo|disponib|availab)/i,
+  precios: /(precio|cu[aá]nto|cost|price|how much|tarifa|servicio|service|qu[eé] hacen|what do you|tratamiento|treatment|lista|options)/i,
+  salud: /(qu[eé] tengo(?! que)|es normal|is (it|this) normal|should i take|qu[eé] (me )?tomo|medicina|medicamento|pastilla|antibi[oó]tico|antibiotic|ibuprofen|painkiller|diagn[oó]stic)/i,
+  llevar: /(llevar|traer|bring|what (do|should) i need|qu[eé] necesito para)/i,
+  pago: /(pago|pagar|sinpe|tarjeta|card|pay|efectivo|cash|seguro|insurance|factura|invoice)/i,
+  cancelar: /(cancel|reprogram|cambiar (la|mi) cita|reschedule|no puedo ir|can'?t make|move my)/i,
+  ubicacion: /(d[oó]nde|ubicaci|direcci|waze|parqueo|parking|where|location|address|llegar)/i,
+  horario: /(horario|abren|cierran|atienden|hours|open|close|s[aá]bado|saturday|domingo|sunday)/i,
+  saludo: /^(hola|buenas|buenos|hi|hello|hey|good (morning|afternoon|evening)|pura vida)/i,
+  gracias: /(gracias|thank|thx)/i,
+  salir: /^(cancelar|cancel|salir|exit|stop)$/i,
+  confirmar: /^(s[ií]|yes|dale|ok|okay|confirm|env[ií]a|enviar|send|agend)/i,
+  primeraSi: /^(s[ií]|yes|primera|first|nuevo|new|nunca)/i,
+  primeraNo: /^(no|ya (he|soy|fui|vine)|i'?ve been|returning|been there|not)/i
+};
+const RE_EN= /(?<![\p{L}])(hi|hello|hey|how|much|price|prices|book|appointment|cleaning|teeth|tooth|dentist|tomorrow|morning|afternoon|what|when|where|thanks|thank|please|available|can|do|you|the|is|are|for|talk|someone|want|need|have|my|i)(?![\p{L}])/giu;
+const RE_ES= /(?<![\p{L}])(hola|buenas|precio|precios|cuánto|cuanto|cuesta|cita|limpieza|dientes?|muelas?|mañana|tarde|qué|que|cuándo|cuando|dónde|donde|gracias|favor|para|el|la|los|las|es|son|hay|quiero|tienen|con|una?|tengo|me|necesito|ocupo)(?![\p{L}])/giu;
+const DIAS= { domingo: 0, sunday: 0, lunes: 1, monday: 1, martes: 2, tuesday: 2, 'miércoles': 3, miercoles: 3, wednesday: 3, jueves: 4, thursday: 4, viernes: 5, friday: 5, 'sábado': 6, sabado: 6, saturday: 6 };
+const MESES= { ene: 0, jan: 0, feb: 1, mar: 2, abr: 3, apr: 3, may: 4, jun: 5, jul: 6, ago: 7, aug: 7, sep: 8, set: 8, oct: 9, nov: 10, dic: 11, dec: 11 };
+const HORAS= {
+  semana: { es: ['8:00 a. m.', '10:30 a. m.', '2:00 p. m.', '4:30 p. m.'], en: ['8:00 a.m.', '10:30 a.m.', '2:00 p.m.', '4:30 p.m.'] },
+  sabado: { es: ['8:00 a. m.', '10:00 a. m.', '11:30 a. m.'], en: ['8:00 a.m.', '10:00 a.m.', '11:30 a.m.'] }
+};
+
+const $= (id)=> document.getElementById(id);
+const log= $('log');
+const chipsBox= $('chips');
+const input= $('msg');
+const angosto= window.matchMedia('(max-width: 860px)');
+
+let lang= 'es';
+let modo= 'libre';
+let paso= null;
+let cita= {};
+let ultimoServicio= null;
+let ultimos= [];
+let tabActiva= 'chat';
+let sinLeer= 0;
+let cuenta= { resp: 0, sol: 0, hum: 0 };
+let filas= [];
+let avisos= [];
+let gen= 0;
+let cola= Promise.resolve();
+
+const t= (obj)=> obj[lang];
+const fin= (s)=> s.endsWith('.')? s: s+ '.';
+const colones= (n)=> '₡'+ n.toLocaleString('es-CR');
+const precio= (s, idioma)=> idioma=== 'en'? `$${s.usd}`: colones(s.crc);
+const fmtHora= (d)=> d.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit', hour12: false });
+const fmtFecha= (d, idioma)=> new Intl.DateTimeFormat(idioma=== 'en'? 'en-US': 'es-CR', { weekday: 'short', day: 'numeric', month: 'short' }).format(d);
+const enDias= (n)=> {
+  const d= new Date();
+  d.setDate(d.getDate()+ n);
+  if(d.getDay()=== 0) d.setDate(d.getDate()+ 1);
+  return fmtFecha(d, 'es');
+};
+
+const filasEjemplo= ()=> [
+  { fecha: enDias(1), hora: '8:00 a. m.', servicio: 'Limpieza dental', paciente: 'Andrea V.', tipo: 'Control', precio: 28000, estado: 'ok', ejemplo: true },
+  { fecha: enDias(2), hora: '2:00 p. m.', servicio: 'Valoración de ortodoncia', paciente: 'Daniel S.', tipo: 'Nuevo', precio: 20000, estado: 'wait', ejemplo: true }
+];
+const avisosEjemplo= ()=> [
+  { hora: '07:00', texto: 'Recordatorio enviado a Andrea V. para su cita de mañana a las 8:00 a. m. (ejemplo).', tipo: '' },
+  { hora: '22:14', texto: 'Cita agendada con la clínica cerrada: valoración de ortodoncia para Daniel S. (ejemplo).', tipo: '' }
+];
+
+const pintarTexto= (cont, texto)=> {
+  texto.split('\n').forEach((linea, i)=> {
+    if(i> 0) cont.appendChild(document.createElement('br'));
+    linea.split('*').forEach((trozo, j)=> {
+      if(!trozo) return;
+      if(j% 2=== 1) {
+        const b= document.createElement('strong');
+        b.textContent= trozo;
+        cont.appendChild(b);
+      } else {
+        cont.appendChild(document.createTextNode(trozo));
+      }
+    });
+  });
+};
+
+const agregarMensaje= (quien, texto)=> {
+  const burbuja= document.createElement('div');
+  burbuja.className= 'msg '+ quien;
+  const cuerpo= document.createElement('div');
+  pintarTexto(cuerpo, texto);
+  const hora= document.createElement('time');
+  hora.textContent= fmtHora(new Date());
+  burbuja.append(cuerpo, hora);
+  log.appendChild(burbuja);
+  log.scrollTop= log.scrollHeight;
+};
+
+const ponerChips= (lista)=> {
+  chipsBox.replaceChildren();
+  lista.forEach((etiqueta)=> {
+    const b= document.createElement('button');
+    b.type= 'button';
+    b.textContent= etiqueta;
+    b.addEventListener('click', ()=> recibir(etiqueta));
+    chipsBox.appendChild(b);
+  });
+  chipsBox.hidden= lista.length=== 0;
+};
+
+const responder= (texto, chips)=> {
+  const g= gen;
+  cola= cola.then(()=> new Promise((listo)=> {
+    if(g!== gen) {
+      listo();
+      return;
+    }
+    const escribiendo= document.createElement('div');
+    escribiendo.className= 'typing';
+    escribiendo.setAttribute('aria-label', lang=== 'es'? 'Escribiendo': 'Typing');
+    for(let i= 0; i< 3; i+= 1) escribiendo.appendChild(document.createElement('i'));
+    log.appendChild(escribiendo);
+    log.scrollTop= log.scrollHeight;
+    const espera= Math.min(1400, 450+ texto.length* 6);
+    setTimeout(()=> {
+      escribiendo.remove();
+      if(g=== gen) {
+        agregarMensaje('bot', texto);
+        ponerChips(chips|| []);
+        cuenta.resp+= 1;
+        pintarCuentas();
+      }
+      listo();
+    }, espera);
+  }));
+};
+
+const luego= (fn)=> {
+  const g= gen;
+  cola= cola.then(()=> {
+    if(g=== gen) fn();
+  });
+};
+
+const pintarCuentas= ()=> {
+  $('k-resp').textContent= cuenta.resp;
+  $('k-sol').textContent= cuenta.sol;
+  $('k-hum').textContent= cuenta.hum;
+};
+
+const pintarAvisos= ()=> {
+  const feed= $('feed');
+  feed.replaceChildren();
+  avisos.slice(0, 6).forEach((a)=> {
+    const li= document.createElement('li');
+    if(a.tipo) li.className= a.tipo;
+    const hora= document.createElement('time');
+    hora.textContent= a.hora;
+    const texto= document.createElement('span');
+    texto.textContent= a.texto;
+    li.append(hora, texto);
+    feed.appendChild(li);
+  });
+};
+
+const pintarFilas= ()=> {
+  const cuerpo= $('rows');
+  cuerpo.replaceChildren();
+  filas.forEach((f)=> {
+    const tr= document.createElement('tr');
+    [f.fecha, f.hora, f.servicio, f.paciente, f.tipo].forEach((valor, i)=> {
+      const td= document.createElement('td');
+      td.textContent= valor;
+      if(i=== 3&& f.ejemplo) {
+        const tag= document.createElement('span');
+        tag.className= 'tag';
+        tag.textContent= 'ejemplo';
+        td.appendChild(tag);
+      }
+      tr.appendChild(td);
+    });
+    const total= document.createElement('td');
+    total.className= 'num';
+    total.textContent= f.precio? colones(f.precio): '—';
+    const est= document.createElement('td');
+    const pill= document.createElement('span');
+    pill.className= 'pill '+ f.estado;
+    pill.textContent= f.estado=== 'ok'? 'Confirmada': (f.estado=== 'urg'? 'Urgencia': 'Por confirmar');
+    est.appendChild(pill);
+    tr.append(total, est);
+    cuerpo.appendChild(tr);
+  });
+};
+
+const avisar= (texto, tipo)=> {
+  avisos.forEach((a)=> {
+    if(a.tipo=== 'new') a.tipo= '';
+  });
+  avisos.unshift({ hora: fmtHora(new Date()), texto, tipo: tipo|| 'new' });
+  pintarAvisos();
+  if(angosto.matches&& tabActiva=== 'chat') {
+    sinLeer+= 1;
+    $('badge').textContent= sinLeer;
+    $('badge').hidden= false;
+  }
+};
+
+const aplicarTabs= ()=> {
+  const corto= angosto.matches;
+  $('pane-chat').hidden= corto&& tabActiva!== 'chat';
+  $('pane-owner').hidden= corto&& tabActiva!== 'owner';
+  $('tab-chat').setAttribute('aria-selected', String(tabActiva=== 'chat'));
+  $('tab-owner').setAttribute('aria-selected', String(tabActiva=== 'owner'));
+};
+
+const irA= (tab)=> {
+  tabActiva= tab;
+  if(tab=== 'owner') {
+    sinLeer= 0;
+    $('badge').hidden= true;
+  }
+  aplicarTabs();
+};
+
+const ponerIdioma= (nuevo)=> {
+  lang= nuevo;
+  $('lang-es').setAttribute('aria-pressed', String(nuevo=== 'es'));
+  $('lang-en').setAttribute('aria-pressed', String(nuevo=== 'en'));
+  $('status').textContent= UI[nuevo].estado;
+  input.placeholder= UI[nuevo].placeholder;
+  $('send').textContent= UI[nuevo].enviar;
+};
+
+const contar= (re, s)=> (s.match(re)|| []).length;
+const detectarIdioma= (s)=> {
+  const en= contar(RE_EN, s);
+  const es= contar(RE_ES, s);
+  if(en> es) return 'en';
+  if(es> en) return 'es';
+  return null;
+};
+
+const buscarServicio= (texto)=> {
+  const s= texto.toLowerCase();
+  return NEGOCIO.servicios.find((x)=> x.claves.some((k)=> s.includes(k))|| s.includes(x.nombre.es.toLowerCase())|| s.includes(x.nombre.en.toLowerCase()))|| null;
+};
+
+const leerFecha= (texto)=> {
+  const s= texto.toLowerCase().replace(/(en|por|de) la (mañana|manana|tarde)/g, ' ').replace(/(in the|this) (morning|afternoon)/g, ' ');
+  const hoy= new Date();
+  const base= new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  let d= null;
+  const numerica= s.match(/(\d{1,2})\s*[\/.-]\s*(\d{1,2})/);
+  const conMes= s.match(/(\d{1,2})\s*(?:de\s+)?(ene|jan|feb|mar|abr|apr|may|jun|jul|ago|aug|sep|set|oct|nov|dic|dec)/);
+  const mesPrimero= s.match(/(ene|jan|feb|mar|abr|apr|may|jun|jul|ago|aug|sep|set|oct|nov|dic|dec)[a-z]*\.?\s+(\d{1,2})/);
+  const dia= Object.keys(DIAS).find((k)=> s.includes(k));
+  const armar= (dd, mm)=> {
+    if(dd< 1|| dd> 31|| mm< 0|| mm> 11) return null;
+    const f= new Date(hoy.getFullYear(), mm, dd);
+    if(f< base) f.setFullYear(hoy.getFullYear()+ 1);
+    return f;
+  };
+  if(/pasado mañana|pasado manana|day after tomorrow/.test(s)) {
+    d= new Date(base);
+    d.setDate(base.getDate()+ 2);
+  } else if(numerica) {
+    d= armar(Number(numerica[1]), Number(numerica[2])- 1);
+  } else if(conMes) {
+    d= armar(Number(conMes[1]), MESES[conMes[2]]);
+  } else if(mesPrimero) {
+    d= armar(Number(mesPrimero[2]), MESES[mesPrimero[1]]);
+  } else if(dia) {
+    d= new Date(base);
+    d.setDate(base.getDate()+ ((DIAS[dia]- base.getDay()+ 7)% 7|| 7));
+  } else if(/mañana|manana|tomorrow/.test(s)) {
+    d= new Date(base);
+    d.setDate(base.getDate()+ 1);
+  } else if(/(?<![\p{L}])hoy(?![\p{L}])|today/u.test(s)) {
+    d= new Date(base);
+  }
+  if(!d) return null;
+  return { texto: fmtFecha(d, lang), dueno: fmtFecha(d, 'es'), dia: d.getDay(), hoy: d.getTime()=== base.getTime() };
+};
+
+const leerHora= (texto)=> {
+  const s= texto.toLowerCase();
+  const m= s.match(/(?<!\d)(\d{1,2})(?::(\d{2}))?\s*(a\.?\s?m\.?|p\.?\s?m\.?|md|m\.|de la mañana|de la tarde|de la noche)?(?!\d)/);
+  if(m) {
+    let h= Number(m[1]);
+    const min= m[2]? Number(m[2]): 0;
+    const suf= m[3]|| '';
+    if(h> 23|| min> 59) return null;
+    if(/^p|tarde|noche/.test(suf)&& h< 12) h+= 12;
+    if(!suf&& h>= 1&& h<= 6) h+= 12;
+    return { minutos: h* 60+ min };
+  }
+  if(/(mañana|manana|morning|temprano|early)/.test(s)) return { franja: 'manana' };
+  if(/(tarde|afternoon|later)/.test(s)) return { franja: 'tarde' };
+  return null;
+};
+
+const textoHora= (minutos, idioma)=> {
+  const h= Math.floor(minutos/ 60);
+  const min= String(minutos% 60).padStart(2, '0');
+  const h12= h% 12|| 12;
+  if(idioma=== 'en') return `${h12}:${min} ${h< 12? 'a.m.': 'p.m.'}`;
+  return `${h12}:${min} ${h< 12? 'a. m.': 'p. m.'}`;
+};
+
+const listaServicios= ()=> {
+  const lineas= NEGOCIO.servicios.map((x)=> `• *${t(x.nombre)}*: ${t(x.duracion)}, ${precio(x, lang)}`);
+  const cabeza= lang=== 'es'? 'Estos son nuestros servicios más pedidos (precios con IVA incluido):': 'These are our most requested services (prices in USD, tax included):';
+  const pie= lang=== 'es'? '¿Cuál te interesa?': 'Which one interests you?';
+  responder([cabeza, ...lineas, pie].join('\n'), NEGOCIO.servicios.map((x)=> t(x.nombre)));
+};
+
+const detalleServicio= (x)=> {
+  ultimoServicio= x;
+  const texto= lang=== 'es'
+    ? `*${x.nombre.es}*\nDuración: ${x.duracion.es} · Precio: ${colones(x.crc)}\nIncluye: ${x.detalle.es}\n¿Te agendo una cita?`
+    : `*${x.nombre.en}*\nDuration: ${x.duracion.en} · Price: $${x.usd}\nIncludes: ${x.detalle.en}\nShall I book an appointment for you?`;
+  responder(texto, lang=== 'es'? ['Agendar este servicio', 'Ver otros servicios']: ['Book this', 'Other services']);
+};
+
+const pasarAPersona= ()=> {
+  modo= 'libre';
+  cita= {};
+  const ultimo= ultimos.slice(-2).join(' / ');
+  responder(lang=== 'es'
+    ? `Te paso con ${NEGOCIO.asesor}, de recepción. Atiende ${NEGOCIO.horario.es}; si es fuera de horario, te escribe apenas abramos. Le dejé tu consulta para que no tengas que repetirla.`
+    : `I'm passing you to ${NEGOCIO.asesor} at reception. She's available ${NEGOCIO.horario.en}; outside those hours she'll write as soon as we open. I left her your question so you don't have to repeat it.`, []);
+  luego(()=> {
+    cuenta.hum+= 1;
+    pintarCuentas();
+    avisar(`Paciente pide hablar con una persona. Últimos mensajes: "${ultimo.slice(0, 120)}"`);
+  });
+};
+
+const urgencia= (texto)=> {
+  modo= 'libre';
+  cita= {};
+  const medicina= RE.salud.test(texto);
+  responder(lang=== 'es'
+    ? `${medicina? 'Por aquí no puedo recomendarte medicamentos. ': ''}Siento que estés con molestias. Ya le avisé a la doctora para buscarte un espacio lo antes posible; recepción te escribe en unos minutos. Si tienes sangrado que no para, fiebre alta o te cuesta tragar o respirar, ve a emergencias de inmediato.`
+    : `${medicina? `I can't recommend medication here. `: ''}Sorry you're in pain. I've already told the dentist so we can find you a slot as soon as possible; reception will write to you in a few minutes. If you have bleeding that won't stop, a high fever, or trouble swallowing or breathing, go to the emergency room right away.`, []);
+  luego(()=> {
+    cuenta.hum+= 1;
+    pintarCuentas();
+    filas.unshift({ fecha: fmtFecha(new Date(), 'es'), hora: 'Lo antes posible', servicio: 'Urgencia', paciente: 'Por confirmar', tipo: '—', precio: 0, estado: 'urg', ejemplo: false });
+    pintarFilas();
+    avisar(`URGENCIA: paciente con molestias, buscarle espacio hoy. Escribió: "${texto.slice(0, 100)}"`, 'urgent');
+  });
+};
+
+const noSe= (texto)=> {
+  responder(lang=== 'es'
+    ? 'No tengo esa información todavía. ¿Quieres que te pase con recepción?'
+    : `I don't have that information yet. Want me to pass you to reception?`, lang=== 'es'? ['Sí, hablar con una persona', 'Servicios y precios']: ['Yes, talk to someone', 'Services and prices']);
+  luego(()=> avisar(`Pregunta sin respuesta, para agregarla al asistente: "${texto.slice(0, 80)}"`));
+};
+
+const pasos= ['servicio', 'fecha', 'hora', 'nombre', 'primera'];
+
+const preguntar= ()=> {
+  paso= pasos.find((p)=> cita[p]=== undefined)|| 'confirmar';
+  if(paso=== 'servicio') {
+    responder(lang=== 'es'? '¿Para qué servicio es la cita? Si no sabes, elige la valoración general.': `What is the appointment for? If you're not sure, choose the general exam.`, NEGOCIO.servicios.map((x)=> t(x.nombre)));
+  } else if(paso=== 'fecha') {
+    responder(lang=== 'es'? `Perfecto: *${cita.servicio.nombre.es}*. ¿Qué día te queda bien?`: `Great: *${cita.servicio.nombre.en}*. What day works for you?`, lang=== 'es'? ['Mañana', 'Pasado mañana', 'Este sábado']: ['Tomorrow', 'Day after tomorrow', 'This Saturday']);
+  } else if(paso=== 'hora') {
+    const lista= cita.fecha.dia=== 6? HORAS.sabado: HORAS.semana;
+    responder(lang=== 'es'? `Para el ${cita.fecha.texto} tengo estos espacios. ¿Cuál prefieres?`: `For ${cita.fecha.texto} I have these slots. Which do you prefer?`, t(lista));
+  } else if(paso=== 'nombre') {
+    responder(lang=== 'es'? '¿Cuál es el nombre completo del paciente?': `What is the patient's full name?`, []);
+  } else if(paso=== 'primera') {
+    responder(lang=== 'es'? '¿Es tu primera vez en la clínica?': 'Is this your first visit to our clinic?', lang=== 'es'? ['Sí, primera vez', 'No, ya he venido']: ['Yes, first visit', `No, I've been before`]);
+  } else {
+    const c= cita;
+    const tipo= c.primera? (lang=== 'es'? 'primera vez': 'first visit'): (lang=== 'es'? 'paciente de control': 'returning patient');
+    const resumen= lang=== 'es'
+      ? `Reviso tu cita:\n*${c.servicio.nombre.es}*\nDía: ${c.fecha.texto}\nHora: ${c.hora.texto}\nPaciente: ${c.nombre} (${tipo})\nPrecio de referencia: ${colones(c.servicio.crc)}\n¿La agendo?`
+      : `Here's your appointment:\n*${c.servicio.nombre.en}*\nDay: ${c.fecha.texto}\nTime: ${c.hora.texto}\nPatient: ${c.nombre} (${tipo})\nReference price: $${c.servicio.usd}\nShall I book it?`;
+    responder(resumen, lang=== 'es'? ['Sí, agendar', 'Cambiar algo']: ['Yes, book it', 'Change something']);
+  }
+};
+
+const validarFecha= (f)=> {
+  if(f.dia!== 0) return true;
+  responder(lang=== 'es'? 'Los domingos la clínica está cerrada. ¿Te sirve otro día?': 'The clinic is closed on Sundays. Does another day work?', lang=== 'es'? ['Mañana', 'Este sábado', 'El lunes']: ['Tomorrow', 'This Saturday', 'Monday']);
+  return false;
+};
+
+const validarHora= (h)=> {
+  const sabado= cita.fecha.dia=== 6;
+  const lista= sabado? HORAS.sabado: HORAS.semana;
+  if(h.franja) {
+    if(sabado&& h.franja=== 'tarde') {
+      responder(lang=== 'es'? 'Los sábados atendemos solo hasta la 1 p. m. Elige uno de estos espacios:': 'On Saturdays we are only open until 1 p.m. Pick one of these slots:', t(lista));
+      return null;
+    }
+    const manana= h.franja=== 'manana';
+    return {
+      texto: lang=== 'es'? (manana? 'en la mañana (recepción te confirma la hora exacta)': 'en la tarde (recepción te confirma la hora exacta)'): (manana? 'morning (reception will confirm the exact time)': 'afternoon (reception will confirm the exact time)'),
+      dueno: manana? 'Mañana, por definir': 'Tarde, por definir'
+    };
+  }
+  const cierre= sabado? 12* 60: 17* 60;
+  if(h.minutos< 8* 60|| h.minutos> cierre) {
+    const rango= sabado
+      ? (lang=== 'es'? 'Los sábados damos citas de 8 a. m. a 12 m.': 'On Saturdays we book from 8 a.m. to noon.')
+      : (lang=== 'es'? 'Entre semana damos citas de 8 a. m. a 5 p. m.': 'On weekdays we book from 8 a.m. to 5 p.m.');
+    responder(`${rango} ${lang=== 'es'? 'Elige uno de estos espacios:': 'Pick one of these slots:'}`, t(lista));
+    return null;
+  }
+  return { texto: textoHora(h.minutos, lang), dueno: textoHora(h.minutos, 'es') };
+};
+
+const iniciarCita= (texto)=> {
+  modo= 'cita';
+  cita= {};
+  const servicio= buscarServicio(texto)|| (/(este servicio|this one|book this)/i.test(texto)? ultimoServicio: null);
+  if(servicio) cita.servicio= servicio;
+  const fecha= leerFecha(texto);
+  if(fecha&& fecha.dia!== 0) cita.fecha= fecha;
+  preguntar();
+};
+
+const agendar= ()=> {
+  const c= cita;
+  modo= 'libre';
+  cita= {};
+  responder(lang=== 'es'
+    ? `¡Listo, ${c.nombre}! Tu cita quedó registrada para el ${c.fecha.texto}, ${fin(c.hora.texto)} Recepción te confirma por aquí y un día antes te mandamos un recordatorio. Si necesitas cambiarla, avísanos con 24 horas.`
+    : `Done, ${c.nombre}! Your appointment is registered for ${c.fecha.texto}, ${fin(c.hora.texto)} Reception will confirm here, and we'll send you a reminder one day before. If you need to change it, please let us know 24 hours ahead.`, lang=== 'es'? ['¿Dónde están?', 'Formas de pago']: ['Where are you?', 'Payment options']);
+  luego(()=> {
+    filas.unshift({ fecha: c.fecha.dueno, hora: c.hora.dueno, servicio: c.servicio.nombre.es, paciente: c.nombre, tipo: c.primera? 'Nuevo': 'Control', precio: c.servicio.crc, estado: 'wait', ejemplo: false });
+    pintarFilas();
+    cuenta.sol+= 1;
+    pintarCuentas();
+    avisar(`Cita nueva: ${c.servicio.nombre.es}, ${c.fecha.dueno}, ${fin(c.hora.dueno.toLowerCase())} Paciente: ${c.nombre} (${c.primera? 'primera vez': 'control'}).`);
+  });
+};
+
+const pasoCita= (texto)=> {
+  if(RE.salir.test(texto)) {
+    modo= 'libre';
+    cita= {};
+    responder(lang=== 'es'? 'Listo, dejé la cita de lado. ¿Te ayudo con algo más?': 'No problem, I dropped the appointment. Anything else I can help with?', t(TXT.inicio));
+    return;
+  }
+  if(paso=== 'servicio') {
+    const servicio= buscarServicio(texto);
+    if(!servicio) {
+      responder(lang=== 'es'? 'No reconocí ese servicio. Elige uno de estos:': `I didn't catch which service. Pick one of these:`, NEGOCIO.servicios.map((x)=> t(x.nombre)));
+      return;
+    }
+    cita.servicio= servicio;
+  } else if(paso=== 'fecha') {
+    const fecha= leerFecha(texto);
+    if(!fecha) {
+      responder(lang=== 'es'? 'No entendí la fecha. Puedes escribir, por ejemplo: "el jueves" o "20 de noviembre".': `I didn't get the date. You can write, for example: "Thursday" or "Nov 20".`, lang=== 'es'? ['Mañana', 'Este sábado']: ['Tomorrow', 'This Saturday']);
+      return;
+    }
+    if(!validarFecha(fecha)) return;
+    cita.fecha= fecha;
+  } else if(paso=== 'hora') {
+    const leida= leerHora(texto);
+    if(!leida) {
+      responder(lang=== 'es'? 'No entendí la hora. Elige uno de estos espacios:': `I didn't get the time. Pick one of these slots:`, t(cita.fecha.dia=== 6? HORAS.sabado: HORAS.semana));
+      return;
+    }
+    const hora= validarHora(leida);
+    if(!hora) return;
+    cita.hora= hora;
+  } else if(paso=== 'nombre') {
+    cita.nombre= texto.replace(/^(me llamo|mi nombre es|soy|es|my name is|i am|i'm|it's)\s+/i, '').slice(0, 40);
+  } else if(paso=== 'primera') {
+    if(RE.primeraNo.test(texto)) cita.primera= false;
+    else if(RE.primeraSi.test(texto)) cita.primera= true;
+    else {
+      responder(lang=== 'es'? '¿Es tu primera vez? Responde sí o no.': 'Is it your first visit? Please answer yes or no.', lang=== 'es'? ['Sí, primera vez', 'No, ya he venido']: ['Yes, first visit', `No, I've been before`]);
+      return;
+    }
+  } else if(paso=== 'confirmar') {
+    if(RE.confirmar.test(texto)) {
+      agendar();
+    } else {
+      cita= {};
+      responder(lang=== 'es'? 'Claro, empecemos de nuevo.': `Sure, let's start over.`, []);
+      preguntar();
+    }
+    return;
+  }
+  preguntar();
+};
+
+const recibir= (bruto)=> {
+  const texto= bruto.trim();
+  if(!texto) return;
+  agregarMensaje('user', texto);
+  ponerChips([]);
+  ultimos.push(texto);
+  const pasoLibre= !(modo=== 'cita'&& paso=== 'nombre');
+  if(pasoLibre) {
+    const idioma= detectarIdioma(texto);
+    if(idioma&& idioma!== lang) ponerIdioma(idioma);
+  }
+  if(RE.humano.test(texto)) {
+    pasarAPersona();
+    return;
+  }
+  if(pasoLibre&& RE.urgencia.test(texto)) {
+    urgencia(texto);
+    return;
+  }
+  if(modo=== 'cita') {
+    pasoCita(texto);
+    return;
+  }
+  const servicio= buscarServicio(texto);
+  if(RE.salud.test(texto)) {
+    responder(t(NEGOCIO.salud), t(TXT.generales));
+  } else if(RE.cancelar.test(texto)) {
+    responder(t(NEGOCIO.cancelacion), t(TXT.generales));
+  } else if(RE.reservar.test(texto)|| /^agendar/i.test(texto)) {
+    iniciarCita(texto);
+  } else if(servicio) {
+    detalleServicio(servicio);
+  } else if(RE.llevar.test(texto)) {
+    responder(t(NEGOCIO.llevar), t(TXT.generales));
+  } else if(RE.pago.test(texto)) {
+    responder(t(NEGOCIO.pago), t(TXT.generales));
+  } else if(RE.ubicacion.test(texto)) {
+    responder(t(NEGOCIO.ubicacion), t(TXT.generales));
+  } else if(RE.horario.test(texto)) {
+    responder(lang=== 'es'? `Atendemos ${fin(NEGOCIO.horario.es)} Los domingos está cerrado.`: `We're open ${fin(NEGOCIO.horario.en)} Closed on Sundays.`, t(TXT.generales));
+  } else if(RE.precios.test(texto)) {
+    listaServicios();
+  } else if(RE.gracias.test(texto)&& texto.length< 30) {
+    responder(lang=== 'es'? '¡Con gusto! Pura vida.': `You're welcome! Pura vida.`, t(TXT.inicio));
+  } else if(RE.saludo.test(texto)) {
+    responder(lang=== 'es'? '¡Hola! ¿En qué te ayudo? Puedo darte servicios y precios, o agendarte una cita.': 'Hi! How can I help? I can share services and prices, or book you an appointment.', t(TXT.inicio));
+  } else {
+    noSe(texto);
+  }
+};
+
+const iniciarChat= ()=> {
+  gen+= 1;
+  cola= Promise.resolve();
+  modo= 'libre';
+  cita= {};
+  paso= null;
+  ultimoServicio= null;
+  ultimos= [];
+  log.replaceChildren();
+  const aviso= document.createElement('div');
+  aviso.className= 'disclosure';
+  aviso.textContent= UI[lang].aviso;
+  log.appendChild(aviso);
+  agregarMensaje('bot', t(TXT.bienvenida));
+  ponerChips(t(TXT.inicio));
+};
+
+const reiniciar= ()=> {
+  filas= filasEjemplo();
+  avisos= avisosEjemplo();
+  cuenta= { resp: 0, sol: 0, hum: 0 };
+  sinLeer= 0;
+  $('badge').hidden= true;
+  pintarFilas();
+  pintarAvisos();
+  pintarCuentas();
+  iniciarChat();
+};
+
+const cambiarIdioma= (nuevo)=> {
+  if(nuevo=== lang) return;
+  ponerIdioma(nuevo);
+  iniciarChat();
+};
+
+$('composer').addEventListener('submit', (e)=> {
+  e.preventDefault();
+  const valor= input.value;
+  input.value= '';
+  recibir(valor);
+});
+$('lang-es').addEventListener('click', ()=> cambiarIdioma('es'));
+$('lang-en').addEventListener('click', ()=> cambiarIdioma('en'));
+$('reset').addEventListener('click', reiniciar);
+$('tab-chat').addEventListener('click', ()=> irA('chat'));
+$('tab-owner').addEventListener('click', ()=> irA('owner'));
+angosto.addEventListener('change', aplicarTabs);
+
+ponerIdioma('es');
+reiniciar();
+aplicarTabs();
+</script>
+</body>
+</html>
