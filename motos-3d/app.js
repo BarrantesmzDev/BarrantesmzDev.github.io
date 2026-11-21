@@ -6,7 +6,7 @@ import {OutlinePass} from 'three/addons/postprocessing/OutlinePass.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {HorizontalBlurShader} from 'three/addons/shaders/HorizontalBlurShader.js';
 import {VerticalBlurShader} from 'three/addons/shaders/VerticalBlurShader.js';
-import {crearMoto, GRUPOS, ACABADOS, aplicarAcabado} from './moto.js?v=20261121a';
+import {crearMoto, GRUPOS, ACABADOS, aplicarAcabado} from './moto.js?v=20261121b';
 
 const $= id=> document.getElementById(id);
 const esc= s=> String(s).replace(/[&<>"']/g, c=> ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[c]);
@@ -977,6 +977,7 @@ function eventos(){
     else if (!varias) limpiarSeleccion();
   });
   lienzo.addEventListener('pointerleave', ()=> ponerHover(null));
+  lienzo.addEventListener('contextmenu', e=> e.preventDefault());
   controles.addEventListener('start', ()=> {
     tweenCam= null;
     $('tip').classList.remove('ver');
