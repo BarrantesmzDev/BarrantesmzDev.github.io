@@ -1,68 +1,51 @@
 # Motos 3D
 
-Web tipo Sketchfab pero solo de motos. Cada moto se ve con el visor oficial de Sketchfab y, por medio de su Viewer API, se le puede cambiar el color pieza por pieza o a todo el carenado de una vez. La página no descarga ni copia los modelos, los colores se cambian en vivo dentro del visor.
+Moto deportiva en 3D hecha desde cero con código, pieza por pieza. Se toca cualquier parte de la moto, se ve cómo se llama y se pinta con el color y el acabado que uno quiera. El carenado completo se puede despiezar para ver y elegir cada panel por separado.
+
+El modelo no viene de Sketchfab ni de ninguna marca. Se arma en el navegador con `moto.js`, por eso la página pesa poco y se puede cambiar cualquier forma desde el código. Es una deportiva original del estilo de una 300 cc, no una copia de la R3 ni de otra moto.
 
 ## Qué trae
 
-- Visor 3D grande, la información del modelo abajo (autor, vistas, licencia) y las motos destacadas al lado, igual que en Sketchfab.
-- Búsqueda en vivo solo de motos. El buscador y las categorías (Deportivas, Naked, Doble propósito, marcas) consultan la API pública de Sketchfab con la etiqueta `motorcycle`.
-- Personalizar: tocar una pieza en la moto la selecciona y «Todo el carenado» agarra todas las piezas de carrocería de un solo toque.
-- Colores base y «Mis colores». Cada persona agrega los suyos con selector, código HEX y nombre, y quedan guardados en su navegador.
-- Acabados: brillante, metalizado, satinado, mate y cromado.
-- «Combinaciones» de dos tonos y el botón «Sorpréndeme», que arma una combinación al azar para todo el carenado. El tanque, el frontal y el colín llevan el color principal y los laterales el segundo.
-- «Compartir» crea un link con el diseño. Quien lo abre ve la moto pintada igual. En el celular abre el menú de compartir, por ejemplo para mandarlo por WhatsApp.
-- Deshacer y rehacer, quitar color, restablecer, «Solo selección», «Varias» (para seleccionar varias piezas en el celular), vistas de cámara, «Ver armado» (la animación de armado de la R3) y «Captura» para bajar una imagen.
+- **Un toque selecciona.** La pieza se marca en naranja, sale una etiqueta con su nombre al lado de la pieza y arriba aparece cuál es. Tocar el fondo suelta la selección y con dos toques seguidos la cámara se acerca a esa pieza.
+- **Despiezar.** Separa todo el carenado con una animación y una barra para decidir qué tanto se abre. Con «Nombres» cada pieza muestra su nombre y también se puede tocar el nombre para elegirla.
+- **65 piezas.** 19 del carenado (frontal, laterales superiores e inferiores, tomas de aire, quilla, cubre tanque, tapas del tanque, tapas bajo el asiento, colín, tapa del colín, bandeja y guardabarro), más burbuja, asientos, rines, llantas, discos, calipers, catalina, cadena, chasis, subchasis, basculante, horquilla, amortiguador, motor y sus tapas, radiador, escape, manubrio, espejos, estriberas y luces.
+- **Lista de piezas con foto.** Cada pieza tiene una miniatura sacada del mismo modelo, el color que tiene ahora y un buscador.
+- **Ambos lados.** Al tocar un lado se elige también el otro, para pintar izquierda y derecha iguales. Se puede apagar.
+- **Varias piezas.** Con el interruptor, con Ctrl o Shift en la compu, o dejando el dedo apretado en el celular, cada toque suma o quita piezas.
+- **Colores y acabados.** 18 colores base y «Mis colores», donde cada persona guarda los suyos con nombre. Acabados: brillante, metalizado, satinado, mate, cromado, anodizado, tornasol y carbono.
+- **Estilos.** Nueve combinaciones listas y el botón «Sorpréndeme». Abajo se explica qué pieza lleva cada color y con «Elegir» se agarran todas las piezas de ese grupo de una vez.
+- **Solo esto.** Deja visible solo lo seleccionado y el resto queda transparente, así se ve bien la forma de la pieza.
+- Deshacer y rehacer, vistas de cámara, girar sola, foto, modo oscuro automático y descarga del modelo en `.glb` para usarlo en otros programas.
+- **Compartir** crea un link con el diseño. Además el diseño se guarda solo en el navegador.
 
-## Motos incluidas
+## Archivos
 
-| Moto | Autor en Sketchfab | Licencia | Cómo viene el carenado |
-| --- | --- | --- | --- |
-| Yamaha YZF-R3 1ª generación (la misma de la 2016) | mandiuza | CC BY 4.0 | 10 piezas separadas: tanque, frontal, laterales, tapas, inferiores, colín y guardabarros |
-| Hero XPulse 200 | Rorro (mauriar25) | Sin licencia de descarga, solo se muestra | Plásticos del carenado |
-| Suzuki Gixxer 250 SF | F5Fury | CC BY 4.0 | Carrocería en una sola pieza más el frente |
-| Yamaha YZF-R3 2017 | e-restrepo1114 | CC BY 4.0 | Por color: carenado azul, carenado plateado y tanque con colín y guardabarros |
-| Yamaha YZF-R3 2019 y Yamaha R1 | dragos12_ y ejsnowy | CC BY 4.0 | Se detecta solo por el nombre de los materiales |
+| Archivo | Qué hace |
+| --- | --- |
+| `index.html` | La página y los estilos. |
+| `app.js` | La escena, la selección, el despiece, las etiquetas, los colores y el panel. |
+| `moto.js` | Arma la moto. Cada pieza es una función o un panel con sus puntos. |
+| `galeria.html` | La versión anterior con los modelos reales de Sketchfab. |
 
-## Publicarla en GitHub Pages
+## Cómo se arma el carenado
 
-1. En GitHub, crear un repositorio nuevo, por ejemplo `motos-3d`, público.
-2. Add file → Upload files → subir `index.html` → Commit changes.
-3. Settings → Pages → en «Build and deployment» elegir Deploy from a branch, rama `main` y carpeta `/ (root)` → Save.
-4. En uno o dos minutos queda en `https://TU-USUARIO.github.io/motos-3d/`.
+La idea es sencilla, la carrocería se define con cuatro «envolventes» (frente, carenado inferior, tanque y colín). Cada envolvente es una forma que cambia a lo largo de la moto, con su alto, su ancho y qué tan cuadrada o redonda es.
+
+Cada panel se dibuja encima de una envolvente con un contorno de puntos vistos de lado (`P(x, y)`), desde arriba (`Pa(x, z)`), desde abajo (`Pb(x, z)`) o por ángulo (`Pf(x, ángulo)`). Los puntos con un `1` al final son las cuatro esquinas del panel. Con eso el código hace la malla, le da grosor de plástico, redondea el borde y deja una junta de 4 mm con el panel de al lado.
+
+Las medidas van en metros: `x` hacia adelante, `y` hacia arriba y `z` hacia la derecha. Por ejemplo, el eje de la rueda delantera está en `x= 0.69` y la trasera en `x= -0.69`.
+
+## Cambiar o agregar una pieza
+
+1. En `moto.js` se busca la pieza por su `id`, por ejemplo `colin`.
+2. Para cambiar la forma se mueven los puntos del contorno. Para cambiar hacia dónde sale al despiezar se cambia `explota: [x, y, z]`.
+3. Para una pieza nueva se usa `unico(...)` si va en el centro o `parPanel(...)` si lleva lado derecho e izquierdo. El lado izquierdo se crea solo, como espejo del derecho.
+4. Si la pieza es del carenado, se agrega su `id` a la lista `CARENADO` en `app.js` para que entre en «Todo el carenado».
 
 ## Probarla en la compu
 
-Con doble clic (`file://`) el visor de Sketchfab puede fallar, por eso conviene levantar un servidor local. En la carpeta del proyecto se corre `npx serve` y se abre la dirección que muestra. También sirve la extensión Live Server de VS Code.
+Los módulos de JavaScript no cargan con doble clic (`file://`), por eso se levanta un servidor local en la carpeta, por ejemplo con `npx serve`, y se abre la dirección que muestra.
 
-## Agregar más motos
+## Publicarla
 
-La idea es sencilla, cada moto es un `uid` de Sketchfab, que son los 32 caracteres al final del link del modelo.
-
-1. Agregarla a `CATALOGO`:
-
-```js
-{uid: 'pegar-aqui-el-uid', nombre: 'Kawasaki Ninja 400'},
-```
-
-2. Con eso ya aparece en «Destacadas» y se puede pintar. El carenado se detecta por el nombre de los materiales. Si se equivoca, se seleccionan las piezas y se usa «Marcar como carenado».
-3. Para dejar ese carenado fijo para todas las personas, se abre la consola del navegador (F12) con esa moto cargada, se corre `motos3d.exportar()` y el resultado se copia en `PRESETS`:
-
-```js
-'uid-de-la-moto': {
-  carenado: {123: 'Tanque', 456: 'Carenado lateral derecho'},
-  nombres: {789: 'Asiento'}
-},
-```
-
-4. Si además se quieren las vistas con nombre (Lateral, 3/4, Frente, Atrás, Arriba), se agregan `centro` (el punto al que mira la cámara), `frente` y `der` (hacia dónde apunta la moto) y `dist` (qué tan lejos queda la cámara en cada vista). Sin esos datos la moto usa los botones de girar, que sirven para cualquier modelo.
-
-```js
-frente: [0, 1, 0], der: [1, 0, 0], centro: [0, -0.65, 0.75],
-dist: {tres: 2.6, lateral: 3.2, frente: 2.6, atras: 2.6, arriba: 4},
-```
-
-## Licencias y créditos
-
-- Los modelos siguen siendo de sus autores y se muestran con el visor de Sketchfab, que es como ellos los publicaron.
-- Los modelos CC BY piden dar crédito. Por eso la página muestra el autor, la licencia y el link de cada moto.
-- Si la web va a ser comercial, hay que revisar el tema de las marcas (Yamaha, Suzuki, Hero) y de los logos que traen los modelos. Además, el visor gratis de Sketchfab siempre muestra su marca.
+Ya está en GitHub Pages dentro de `barrantesmzdev.github.io/motos-3d/`. Para actualizarla basta con subir los archivos nuevos a esa carpeta. Si un cambio no se ve, se sube el número de `?v=` en `index.html` y en el `import` de `app.js` para que el navegador no use la versión vieja.
