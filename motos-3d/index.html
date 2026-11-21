@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motos 3D</title>
+<meta name="description" content="Galería de motos en 3D con configurador de colores pieza por pieza.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%2216%22 fill=%22none%22 stroke=%22%231a1e23%22 stroke-width=%225%22/%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%225%22 fill=%22%23e8461f%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;--bg:light-dark(#f1f2f3,#111316);--panel:light-dark(#ffffff,#1a1d21);--soft:light-dark(#f4f5f6,#22262b);--line:light-dark(#e0e2e5,#2d3137);--ink:light-dark(#1a1e23,#eceef0);--muted:light-dark(#5f656d,#9ba2aa);--accent:#e8461f;--accent-2:#c53912}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
+a{color:inherit}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{font-family:"Saira Condensed",Barlow,sans-serif;margin:0;line-height:1.08}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:20px;padding:10px 24px;background:var(--panel);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font:700 25px "Saira Condensed",sans-serif;white-space:nowrap}
+.logo svg{width:34px;height:34px;flex:none}
+.search{flex:1;max-width:640px;position:relative;margin:0}
+.search svg{position:absolute;left:12px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search input{width:100%;height:44px;padding:0 14px 0 40px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-size:16px}
+.top .note{margin-left:auto;font-size:13px;color:var(--muted);white-space:nowrap}
+.cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 24px;background:var(--panel);border-bottom:1px solid var(--line)}
+.cats button{flex:none;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--soft);font-weight:600;font-size:14px;white-space:nowrap}
+.cats button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.page{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;max-width:1520px;margin:0 auto;padding:24px}
+.viewer{position:relative;aspect-ratio:16/10;max-height:78vh;width:100%;background:#202327;border-radius:6px;overflow:hidden}
+.viewer iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vmsg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#e9eaec;background:#202327;padding:24px;font-weight:600}
+.vmsg[hidden]{display:none}
+.vmsg small{display:block;margin-top:6px;font-weight:500;color:#a7acb3}
+.hover{position:absolute;left:14px;top:14px;padding:6px 11px;border-radius:9px;background:rgb(20 22 25/.8);color:#fff;font-size:14px;font-weight:600;pointer-events:none;opacity:0;transition:opacity .15s}
+.hover.on{opacity:1}
+.tools{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px}
+.tools button{min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-weight:600;font-size:15px;white-space:nowrap}
+.tools button:hover:not(:disabled){border-color:var(--ink)}
+.tools button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.tools .primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.tools .primary:hover:not(:disabled){background:var(--accent-2);border-color:var(--accent-2)}
+.tools .primary[aria-pressed=true]{background:var(--accent-2);border-color:var(--accent-2);color:#fff;box-shadow:inset 0 0 0 2px rgb(255 255 255/.5)}
+.tools .sep{width:1px;height:28px;background:var(--line);margin:0 4px}
+.tools .push{margin-left:auto}
+.info{margin-top:22px}
+.info h1{font-size:clamp(28px,3vw,38px);font-weight:700}
+.by{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:12px}
+.by img{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--soft)}
+.by .who{font-weight:600}
+.by .who small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.stats{display:flex;flex-wrap:wrap;gap:6px 18px;margin-left:auto;color:var(--muted);font-size:15px}
+.stats span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.stats svg{width:17px;height:17px}
+.lic{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:14px;font-size:14px}
+.chip{display:inline-block;padding:4px 10px;border-radius:999px;background:var(--soft);border:1px solid var(--line);font-weight:600;font-size:13px}
+.desc{margin:12px 0 0;color:var(--muted);max-width:75ch;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.desc.open{display:block}
+.linkbtn{border:0;background:none;padding:6px 0;color:var(--accent);font-weight:600}
+.custom{margin-top:26px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+.chead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.chead h2{font-size:26px;font-weight:700}
+.chead p{margin:0;color:var(--muted);font-size:14px}
+.cgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.cgrid>div{padding:18px 20px}
+.cgrid>div+div{border-left:1px solid var(--line)}
+.blk+.blk{margin-top:22px}
+.blk h3{font-size:19px;font-weight:600;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.blk h3 small{font:500 13px Barlow,sans-serif;color:var(--muted)}
+.blk h3.mt{margin-top:16px}
+.empty{margin:8px 0 0;font-size:15px;color:var(--muted)}
+.names{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
+.names:empty{display:none}
+.names li{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--soft);border:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-weight:600;font-size:15px}
+.btn:hover:not(:disabled){border-color:var(--ink)}
+.btn.wide{width:100%;margin-top:14px}
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:12px 10px;margin-top:10px}
+.sw .empty{grid-column:1/-1;margin:0}
+.c{position:relative}
+.c>button:first-child{display:grid;gap:5px;width:100%;padding:0;border:0;background:none;text-align:left;font-size:13px;color:var(--muted)}
+.c .s{display:block;aspect-ratio:1;border-radius:11px;background:var(--c);box-shadow:inset 0 0 0 1px rgb(0 0 0/.14),inset 0 -12px 18px rgb(0 0 0/.2),inset 0 9px 14px rgb(255 255 255/.28);transition:transform .15s}
+.c>button:first-child:hover .s{transform:translateY(-2px)}
+.c .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c .x{position:absolute;top:-7px;right:-7px;width:26px;height:26px;padding:0;border:2px solid var(--panel);border-radius:50%;background:var(--ink);color:var(--panel);font-size:15px;line-height:20px;display:none}
+.c:hover .x,.c:focus-within .x{display:block}
+@media(hover:none){.c .x{display:block}}
+.add{display:grid;grid-template-columns:52px minmax(0,1fr) minmax(0,1.2fr) auto;gap:8px;margin-top:14px}
+.add input[type=color]{width:52px;height:44px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
+.add input[type=text]{height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-size:16px}
+.add button{min-height:44px;padding:0 14px;border:0;border-radius:10px;background:var(--ink);color:var(--panel);font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.seg button{min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--soft);font-weight:600;font-size:15px}
+.seg button[aria-checked=true]{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.find{width:100%;height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-size:16px;margin-top:10px}
+.grp{margin-top:14px}
+.gh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.gh h4{font-size:17px;font-weight:600}
+.gh h4 span{font:500 13px Barlow,sans-serif;color:var(--muted);margin-left:6px}
+.gh button{min-height:40px;padding:0 10px;border:0;border-radius:9px;background:transparent;color:var(--accent);font-weight:600;font-size:15px}
+.plist{display:grid;gap:2px;margin-top:4px}
+.plist.largo{max-height:430px;overflow:auto}
+.pz{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 10px;border:0;border-radius:9px;background:transparent;text-align:left;font-size:15px}
+.pz:hover{background:var(--soft)}
+.pz[aria-pressed=true]{background:color-mix(in srgb,var(--accent) 15%,transparent)}
+.pz .d{flex:none;width:18px;height:18px;border-radius:5px;background:var(--c);box-shadow:inset 0 0 0 1px rgb(0 0 0/.18)}
+.pz .d.no{background:repeating-linear-gradient(45deg,var(--line) 0 3px,transparent 3px 6px)}
+.side h2{font-size:24px;font-weight:700}
+.side .sub{margin:4px 0 0;font-size:14px;color:var(--muted)}
+.cards{display:grid;gap:14px;margin-top:14px}
+.card{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center;padding:0;border:0;background:var(--panel);border-radius:8px;overflow:hidden;text-align:left;box-shadow:0 1px 2px rgb(0 0 0/.06)}
+.card:hover{box-shadow:0 4px 16px rgb(0 0 0/.12)}
+.card[aria-current=true]{outline:2px solid var(--accent)}
+.card img{width:150px;height:96px;object-fit:cover;background:var(--soft);display:block}
+.card b{font-weight:600;font-size:15px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card small{display:block;margin-top:4px;color:var(--muted);font-size:13px}
+.card .ci{padding-right:10px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,10px);padding:11px 16px;border-radius:12px;background:var(--ink);color:var(--panel);font-size:15px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;width:max-content;max-width:calc(100% - 32px);text-align:center;z-index:50}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.foot{max-width:1520px;margin:0 auto;padding:6px 24px 40px;color:var(--muted);font-size:13px}
+@media(max-width:1100px){.page{grid-template-columns:minmax(0,1fr)}.cards{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}}
+@media(max-width:760px){.cgrid{grid-template-columns:minmax(0,1fr)}.cgrid>div+div{border-left:0;border-top:1px solid var(--line)}.top{flex-wrap:wrap;gap:10px;padding:10px 14px}.top .note{display:none}.search{flex-basis:100%;max-width:none}.cats{padding:8px 14px}.page{padding:14px;gap:20px}.viewer{aspect-ratio:4/3}.stats{margin-left:0;width:100%}.tools .push{margin-left:0}.add{grid-template-columns:52px minmax(0,1fr) auto}.add #cname{grid-column:1/-1;grid-row:2}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="logo" href="#" id="home"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="5"/><path d="M20 4v9M20 27v9M4 20h9M27 20h9" stroke="currentColor" stroke-width="3"/><circle cx="20" cy="20" r="5" fill="#e8461f"/></svg>Motos 3D</a>
+  <form class="search" id="fSearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Buscar motos en 3D: marca, modelo o estilo" aria-label="Buscar motos en 3D" autocomplete="off"></form>
+  <span class="note">Solo motos · modelos de Sketchfab</span>
+</header>
+<nav class="cats" id="cats" aria-label="Categorías"></nav>
+<main class="page">
+  <div>
+    <div class="viewer" id="viewer">
+      <iframe id="frame" title="Visor 3D" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen></iframe>
+      <div class="hover" id="hover"></div>
+      <div class="vmsg" id="vmsg"><div><span id="vmsgText">Cargando modelo</span><small id="vmsgSub"></small></div></div>
+    </div>
+    <div class="tools" id="tools">
+      <button type="button" class="primary" id="bCarenado" aria-pressed="false" disabled>Todo el carenado</button>
+      <span class="sep"></span>
+      <span id="views" style="display:contents"></span>
+      <span class="sep"></span>
+      <button type="button" id="bSolo" aria-pressed="false" disabled>Solo selección</button>
+      <button type="button" id="bMulti" aria-pressed="false">Varias</button>
+      <button type="button" id="bAnim" hidden>Ver armado</button>
+      <button type="button" id="bShot" class="push" disabled>Captura</button>
+    </div>
+    <section class="info" aria-labelledby="title">
+      <h1 id="title">Motos 3D</h1>
+      <div class="by"><img id="avatar" alt="" width="44" height="44" hidden><div class="who"><a id="author" href="#" target="_blank" rel="noopener"></a><small id="published"></small></div><div class="stats" id="stats"></div></div>
+      <div class="lic" id="lic"></div>
+      <p class="desc" id="desc"></p>
+      <button type="button" class="linkbtn" id="bDesc" hidden>Ver más</button>
+    </section>
+    <section class="custom" aria-labelledby="hCustom">
+      <div class="chead"><h2 id="hCustom">Personalizar</h2><p id="cNote">Toca una pieza en la moto o usa «Todo el carenado».</p></div>
+      <div class="cgrid">
+        <div>
+          <div class="blk">
+            <h3>Selección <small id="selCount">Nada seleccionado</small></h3>
+            <ul class="names" id="selNames"></ul>
+            <div class="row">
+              <button type="button" class="btn" id="bClear" disabled>Quitar selección</button>
+              <button type="button" class="btn" id="bReset" disabled>Quitar color</button>
+              <button type="button" class="btn" id="bTag" disabled>Marcar como carenado</button>
+            </div>
+          </div>
+          <div class="blk">
+            <h3>Color <small>se aplica a lo seleccionado</small></h3>
+            <div class="sw" id="sw"></div>
+            <h3 class="mt">Mis colores</h3>
+            <div class="sw" id="mine"></div>
+            <form class="add" id="fAdd" autocomplete="off">
+              <input type="color" id="pick" value="#1f3fd1" aria-label="Elegir color">
+              <input type="text" id="hex" value="#1F3FD1" maxlength="7" spellcheck="false" aria-label="Código HEX del color">
+              <input type="text" id="cname" maxlength="24" placeholder="Nombre (opcional)" aria-label="Nombre del color">
+              <button type="submit">Agregar</button>
+            </form>
+          </div>
+          <div class="blk">
+            <h3>Acabado</h3>
+            <div class="seg" id="seg" role="radiogroup" aria-label="Acabado"></div>
+          </div>
+          <div class="row">
+            <button type="button" class="btn" id="bUndo" disabled>Deshacer</button>
+            <button type="button" class="btn" id="bRedo" disabled>Rehacer</button>
+            <button type="button" class="btn" id="bResetAll" disabled>Restablecer moto</button>
+          </div>
+        </div>
+        <div>
+          <div class="blk">
+            <h3>Piezas <small id="pCount"></small></h3>
+            <input class="find" id="find" type="search" placeholder="Buscar pieza" aria-label="Buscar pieza">
+            <div id="groups"><p class="empty">Las piezas aparecen cuando carga el modelo.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <aside class="side" aria-labelledby="sideTitle">
+    <h2 id="sideTitle">Destacadas</h2>
+    <p class="sub" id="sideSub">Las motos del proyecto, listas para pintar pieza por pieza.</p>
+    <div class="cards" id="cards"></div>
+    <button type="button" class="btn wide" id="bMore" hidden>Ver más motos</button>
+  </aside>
+</main>
+<footer class="foot">Los modelos 3D se muestran con el visor oficial de Sketchfab y pertenecen a sus autores. Esta página no los descarga ni los copia, los colores se cambian en vivo dentro del visor.</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
+<script>
+{
+const API= 'https://api.sketchfab.com/v3';
+const CATALOGO= [
+  {uid: '4631395173f3420f821c9d3cc2f4281e', nombre: 'Yamaha YZF-R3 1ª gen (alta definición)'},
+  {uid: '1c7b35c89a104fc997129f3f08ebc5c2', nombre: 'Hero XPulse 200'},
+  {uid: '4897048424a1451bb631744d69e7ba8c', nombre: 'Suzuki Gixxer 250 SF'},
+  {uid: 'e346487f74504cc780a4aa6b92c5ee24', nombre: 'Yamaha YZF-R3 2017'},
+  {uid: '14bdccac085449a8a31df2410bd1129e', nombre: 'Yamaha YZF-R3 2019'},
+  {uid: '7b3343ad0c0f4cbe94238c734e1b731a', nombre: 'Yamaha R1'}
+];
+const PRESETS= {
+  '4631395173f3420f821c9d3cc2f4281e': {
+    frente: [0, 1, 0], der: [1, 0, 0], centro: [-0.0125, -0.004, 0.02],
+    dist: {tres: 0.07, lateral: 0.088, frente: 0.075, atras: 0.075, arriba: 0.11},
+    anim: 33.3,
+    carenado: {2226: 'Tanque', 2407: 'Carenado frontal', 2097: 'Carenado lateral derecho', 2076: 'Carenado lateral izquierdo', 2174: 'Tapa lateral derecha', 2154: 'Tapa lateral izquierda', 2137: 'Carenado inferior derecho', 2117: 'Carenado inferior izquierdo', 2293: 'Colín', 2746: 'Guardabarros delantero'},
+    nombres: {2258: 'Asiento del piloto', 2276: 'Asiento del pasajero', 2426: 'Parabrisas', 2517: 'Faros', 1525: 'Llanta delantera', 1425: 'Llanta trasera', 1517: 'Rin delantero', 1414: 'Rin trasero', 909: 'Escape', 977: 'Silenciador', 2575: 'Espejos', 2555: 'Moldura frontal derecha', 2535: 'Moldura frontal izquierda', 2237: 'Franja del tanque'}
+  },
+  'e346487f74504cc780a4aa6b92c5ee24': {
+    frente: [0, 1, 0], der: [1, 0, 0], centro: [-0.42, 0.4, 1.2],
+    dist: {tres: 12, lateral: 13, frente: 11, atras: 11, arriba: 17},
+    porMaterial: true,
+    carenado: {157: 'Carenado azul', 125: 'Carenado plateado', 337: 'Tanque, colín y guardabarros'},
+    nombres: {}
+  },
+  '4897048424a1451bb631744d69e7ba8c': {
+    frente: [-1, 0, 0], der: [0, 1, 0], centro: [4.2, 2.57, 2.0],
+    dist: {tres: 10, lateral: 12, frente: 9, atras: 9, arriba: 14},
+    ocultar: [18, 38, 80, 102, 111, 146, 57],
+    carenado: {120: 'Carrocería (carenado, tanque y colín)', 5: 'Frente del carenado'},
+    nombres: {27: 'Parabrisas', 47: 'Rines', 67: 'Llantas y horquilla', 133: 'Tablero'}
+  },
+  '1c7b35c89a104fc997129f3f08ebc5c2': {
+    frente: [0, 1, 0], der: [1, 0, 0], centro: [0, -0.65, 0.75],
+    dist: {tres: 2.6, lateral: 3.2, frente: 2.6, atras: 2.6, arriba: 4},
+    carenadoMat: ['Plastico mate negro', 'Plastico mate negro_0'],
+    excluir: [1377],
+    carenado: {518: 'Cubierta del tanque', 993: 'Guardabarros delantero', 187: 'Tapa lateral', 376: 'Panel trasero', 816: 'Protector de horquilla'},
+    nombres: {1377: 'Espejos'}
+  }
+};
+const DIRS= {tres: [0.6134, 0.7361, 0.2863], lateral: [1, 0, 0.06], frente: [0, 1, 0.1], atras: [0, -1, 0.16], arriba: [0, 0.03, 1]};
+const ACABADOS= {
+  brillante: {nombre: 'Brillante', metal: 0, rough: 0.3, coat: 1, coatRough: 0.04},
+  metalizado: {nombre: 'Metalizado', metal: 0.7, rough: 0.3, coat: 1, coatRough: 0.08},
+  satinado: {nombre: 'Satinado', metal: 0.05, rough: 0.55, coat: 0.3, coatRough: 0.4},
+  mate: {nombre: 'Mate', metal: 0, rough: 0.9, coat: 0, coatRough: 1},
+  cromado: {nombre: 'Cromado', metal: 1, rough: 0.08, coat: 0, coatRough: 1}
+};
+const BASE= [['Negro', '#121316'], ['Blanco', '#f1f1ee'], ['Plata', '#a9adb2'], ['Grafito', '#45484d'], ['Azul', '#1f3fd1'], ['Celeste', '#3aa6e8'], ['Rojo', '#c4161c'], ['Naranja', '#ee6a1b'], ['Amarillo', '#f3c300'], ['Verde', '#1f8a43']];
+const CATS= [['Destacadas', ''], ['Todas', '*'], ['Deportivas', 'sport bike'], ['Naked', 'naked'], ['Doble propósito', 'adventure'], ['Motocross', 'motocross'], ['Scooters', 'scooter'], ['Clásicas', 'cafe racer'], ['Custom', 'chopper'], ['Yamaha', 'yamaha'], ['Honda', 'honda'], ['Suzuki', 'suzuki'], ['Kawasaki', 'kawasaki'], ['KTM', 'ktm'], ['Ducati', 'ducati'], ['BMW', 'bmw'], ['Harley-Davidson', 'harley']];
+const SI= /(carena|fairing|cowl|carroc|bodywork|body|tanque|tank|fuel|fender|guardabarro|mudguard|colin|colín|tail|cola|tapa|panel|cover|shroud|plastic|plástico|plastico|paint|pintura|livery)/i;
+const NO= /(glass|vidrio|cristal|windscreen|windshield|parabrisas|chrome|cromo|tire|tyre|llanta|neum|rubber|caucho|rim\b|rin\b|wheel|rueda|disc|disco|brake|freno|caliper|engine|motor|exhaust|escape|muffler|chain|cadena|frame|chasis|chassis|fork|horquilla|shock|amort|seat|asiento|light|luz|faro|lamp|mirror|espejo|handle|manubrio|mango|grip|bolt|tornillo|screw|cable|steel|acero|edge)/i;
+const GENERICO= /^(pieza|material|mat|default|lambert|phong|blinn|standard|surface|aistandardsurface|object|objeto|mesh|malla|node|nodo|geometry|group|grupo|simetrico|no simetrico|color)$/i;
+const ICON_OJO= '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>';
+const ICON_CORAZON= '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-9.3-9.2C1.4 7.4 3.6 4 7 4c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.4 0 5.6 3.4 4.3 6.8C19.5 15.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+const ICON_MALLA= '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 21 20H3Z M12 3v17 M7.5 11.5h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+
+const $= id=> document.getElementById(id);
+const esc= s=> String(s?? '').replace(/[&<>"']/g, c=> ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[c]);
+const fmt= n=> Number(n|| 0).toLocaleString('es-CR');
+const lin= c=> c<= 0.04045? c/ 12.92: Math.pow((c+ 0.055)/ 1.055, 2.4);
+const store= {
+  get(k, d){ try{ const v= localStorage.getItem(k); return v=== null? d: JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+
+let api= null, uid= null, preset= null, token= 0, camInicio= null, animTimer= 0, siguiente= null;
+let piezas= [], porId= new Map();
+const sel= new Set(), ocultas= new Set(), filas= new Map(), fichas= new Map();
+let multi= false, solo= false, deshacer= [], rehacer= [];
+let acabado= ACABADOS[store.get('m3d:acabado', 'brillante')]? store.get('m3d:acabado', 'brillante'): 'brillante';
+let misColores= store.get('m3d:colores', []).filter(c=> c&& /^#[0-9a-f]{6}$/i.test(c.hex));
+
+function llamar(a, metodo, ...args){
+  return new Promise((res, rej)=> {
+    const t= setTimeout(()=> rej(new Error(metodo)), 10000);
+    a[metodo](...args, (err, v)=> { clearTimeout(t); if (err) rej(err); else res(v); });
+  });
+}
+
+let avisoTimer= 0;
+function aviso(texto){
+  const t= $('toast');
+  t.textContent= texto;
+  t.classList.add('on');
+  clearTimeout(avisoTimer);
+  avisoTimer= setTimeout(()=> t.classList.remove('on'), 3000);
+}
+
+function mensaje(texto, sub){
+  $('vmsg').hidden= !texto;
+  if (texto){ $('vmsgText').textContent= texto; $('vmsgSub').textContent= sub|| ''; }
+}
+
+function limpiar(nodo, mat){
+  const q= s=> String(s|| '').split(':').pop().replace(/_\d+$/, '').replace(/(polySurface|pCube|pCylinder|pSphere|pPipe|pTorus|pPlane|nurbsCircle|Object|Mesh|mesh|Node|node|Geometry|geometry|Material|material)(?=[\s_.\-]*\d)/g, ' ').replace(/SG\d*$/, '').replace(/[_.\-]+/g, ' ').replace(/\b\d+\b/g, ' ').replace(/\s+/g, ' ').trim();
+  let s= q(nodo);
+  if (!s|| GENERICO.test(s)) s= q(mat);
+  if (!s|| GENERICO.test(s)|| /^(aistandardsurface|lambert|phong|blinn|initialshadinggroup)/i.test(s)) s= 'Pieza';
+  if (s=== s.toUpperCase()) s= s.toLowerCase();
+  return s.charAt(0).toUpperCase()+ s.slice(1);
+}
+
+function pareceCarenado(nodo, mat){
+  const t= (nodo|| '')+ ' '+ (mat|| '');
+  return SI.test(t)&& !NO.test(t);
+}
+
+function cargar(id){
+  const mio= ++token;
+  uid= id;
+  preset= PRESETS[id]|| null;
+  api= null;
+  piezas= [];
+  porId= new Map();
+  sel.clear();
+  ocultas.clear();
+  deshacer= [];
+  rehacer= [];
+  solo= false;
+  camInicio= null;
+  clearTimeout(animTimer);
+  animTimer= 0;
+  $('bSolo').setAttribute('aria-pressed', 'false');
+  $('bAnim').hidden= !(preset&& preset.anim);
+  $('bAnim').textContent= 'Ver armado';
+  $('bShot').disabled= true;
+  $('views').innerHTML= '';
+  $('hover').classList.remove('on');
+  pintarPiezas();
+  actualizarSel();
+  actualizarHistorial();
+  mensaje('Cargando modelo', 'El visor de Sketchfab puede tardar unos segundos');
+  const fr= document.createElement('iframe');
+  fr.id= 'frame';
+  fr.title= 'Visor 3D';
+  fr.allow= 'autoplay; fullscreen; xr-spatial-tracking';
+  fr.setAttribute('allowfullscreen', '');
+  $('frame').replaceWith(fr);
+  const cliente= new Sketchfab('1.12.1', fr);
+  cliente.init(id, {
+    success: a=> {
+      if (mio!== token) return;
+      a.start();
+      a.addEventListener('viewerready', ()=> { if (mio=== token) listo(a, mio); });
+    },
+    error: ()=> { if (mio=== token) mensaje('No se pudo abrir este modelo', 'Puede que el autor no permita mostrarlo fuera de Sketchfab.'); },
+    autostart: 1, preload: 1, ui_infos: 0, ui_controls: 1, ui_fullscreen: 1, ui_settings: 0, ui_help: 0, ui_vr: 0, ui_ar: 0, ui_inspector: 0, ui_annotations: 0, ui_stop: 0, ui_hint: 0, ui_watermark: 0, ui_theme: 'dark', dnt: 1
+  });
+  ficha(id).then(f=> { if (mio=== token) mostrarFicha(f); });
+  marcarTarjetas();
+}
+
+async function listo(a, mio){
+  try{
+    if (preset&& preset.anim){ a.setCycleMode('one'); a.seekTo(preset.anim); a.pause(); setTimeout(()=> { if (mio=== token&& !animTimer){ a.seekTo(preset.anim); a.pause(); } }, 600); }
+    if (preset&& preset.ocultar) for (const n of preset.ocultar) a.hide(n);
+    const [mats, mapa]= await Promise.all([llamar(a, 'getMaterialList'), llamar(a, 'getNodeMap')]);
+    if (mio!== token) return;
+    api= a;
+    armarPiezas(mats, mapa);
+    a.addEventListener('click', alClic, {pick: 'slow'});
+    a.addEventListener('nodeMouseEnter', i=> mostrarHover(i&& i.instanceID), {pick: 'fast'});
+    a.addEventListener('nodeMouseLeave', ()=> mostrarHover(null), {pick: 'fast'});
+    mensaje(null);
+    pintarVistas();
+    if (conCamara()) setTimeout(()=> { if (mio=== token) vista('tres', 1.2); }, 400);
+    else setTimeout(async ()=> { if (mio!== token) return; try{ camInicio= await llamar(a, 'getCameraLookAt'); }catch(e){} }, 2500);
+    for (const p of piezas) if (p.pintura) aplicar(p);
+    pintarPiezas();
+    actualizarSel();
+    actualizarHistorial();
+    $('bShot').disabled= false;
+  }catch(e){
+    if (mio=== token) mensaje('El visor no respondió', 'Prueba recargar la página.');
+  }
+}
+
+function armarPiezas(mats, mapa){
+  const porMat= new Map(mats.map(m=> [m.id, m]));
+  const tags= store.get('m3d:carenado:'+ uid, {});
+  const guardado= store.get('m3d:pintura:'+ uid, {});
+  const ocultar= new Set(preset&& preset.ocultar|| []);
+  const excluir= new Set(preset&& preset.excluir|| []);
+  const conteo= new Map();
+  for (const n of Object.values(mapa)){
+    if (n.type!== 'Geometry'|| ocultar.has(n.instanceID)) continue;
+    const mat= porMat.get(n.materialID);
+    if (!mat) continue;
+    const id= n.instanceID;
+    let grupo0= 'otras', nombre= null;
+    if (preset){
+      if (preset.carenado&& preset.carenado[id]){ grupo0= 'carenado'; nombre= preset.carenado[id]; }
+      else if (preset.carenadoMat&& preset.carenadoMat.includes(mat.name)&& !excluir.has(id)){ grupo0= 'carenado'; nombre= 'Plástico del carenado'; }
+      if (!nombre&& preset.nombres) nombre= preset.nombres[id]|| null;
+    }
+    else if (pareceCarenado(n.name, mat.name)) grupo0= 'carenado';
+    if (!nombre) nombre= limpiar(preset&& preset.porMaterial? '': n.name, mat.name);
+    const k= nombre.toLowerCase();
+    conteo.set(k, (conteo.get(k)|| 0)+ 1);
+    const p= {id, nodo: n, nombre, grupo0, grupo: tags[id]=== 'carenado'|| tags[id]=== 'otras'? tags[id]: grupo0, base: JSON.parse(JSON.stringify(mat)), propio: null, pintura: null, flash: false, cola: Promise.resolve(), api: api};
+    const g= guardado[id];
+    if (g&& /^#[0-9a-f]{6}$/i.test(g.hex)) p.pintura= {hex: g.hex, acabado: ACABADOS[g.acabado]? g.acabado: 'brillante'};
+    piezas.push(p);
+    porId.set(id, p);
+  }
+  const vistos= new Map();
+  for (const p of piezas){
+    const k= p.nombre.toLowerCase();
+    if (conteo.get(k)> 1){ const i= (vistos.get(k)|| 0)+ 1; vistos.set(k, i); p.nombre= p.nombre+ ' '+ i; }
+  }
+}
+
+function alClic(info){
+  const p= info&& info.instanceID!== undefined&& info.instanceID!== null? porId.get(info.instanceID): null;
+  if (!p){ if (!multi&& sel.size) fijarSel([]); return; }
+  if (multi) alternar(p.id);
+  else fijarSel(sel.size=== 1&& sel.has(p.id)? []: [p.id]);
+}
+
+function mostrarHover(id){
+  const p= id!== null&& id!== undefined? porId.get(id): null;
+  const el= $('hover');
+  if (p){ el.textContent= p.nombre; el.classList.add('on'); }
+  else el.classList.remove('on');
+}
+
+function fijarSel(ids){
+  const antes= new Set(sel);
+  sel.clear();
+  for (const id of ids) if (porId.has(id)) sel.add(id);
+  refrescarSel(antes);
+}
+function alternar(id){
+  const antes= new Set(sel);
+  if (sel.has(id)) sel.delete(id);
+  else sel.add(id);
+  refrescarSel(antes);
+}
+function refrescarSel(antes){
+  for (const id of new Set([...antes, ...sel])){
+    const p= porId.get(id);
+    if (!p) continue;
+    if (sel.has(id)&& !antes.has(id)){
+      p.flash= true;
+      aplicar(p);
+      setTimeout(()=> { p.flash= false; if (porId.get(id)=== p) aplicar(p); }, 520);
+    }
+    else if (!sel.has(id)&& antes.has(id)) aplicar(p);
+  }
+  if (solo) aplicarSolo();
+  actualizarSel();
+}
+
+function pintarDef(def, pin){
+  const rgb= [1, 3, 5].map(i=> lin(parseInt(pin.hex.slice(i, i+ 2), 16)/ 255));
+  const f= ACABADOS[pin.acabado]|| ACABADOS.brillante;
+  const ch= def.channels|| (def.channels= {});
+  const on= k=> ch[k]&& ch[k].enable;
+  const spec= on('DiffusePBR')&& !on('AlbedoPBR');
+  if (!on('AlbedoPBR')&& !on('DiffusePBR')&& ch.AlbedoPBR) ch.AlbedoPBR.enable= true;
+  for (const k of ['AlbedoPBR', 'DiffusePBR', 'DiffuseColor']) if (on(k)){ ch[k].color= spec&& k=== 'DiffusePBR'? rgb.map(v=> v* (1- f.metal)): rgb.slice(); ch[k].factor= 1; delete ch[k].texture; }
+  if (on('MetalnessPBR')){ ch.MetalnessPBR.factor= f.metal; delete ch.MetalnessPBR.texture; }
+  if (on('SpecularPBR')){ ch.SpecularPBR.color= rgb.map(v=> v* f.metal+ 0.04* (1- f.metal)); ch.SpecularPBR.factor= 1; delete ch.SpecularPBR.texture; }
+  if (on('RoughnessPBR')){ ch.RoughnessPBR.factor= f.rough; delete ch.RoughnessPBR.texture; }
+  if (on('GlossinessPBR')){ ch.GlossinessPBR.factor= 1- f.rough; delete ch.GlossinessPBR.texture; }
+  if (ch.ClearCoat){ ch.ClearCoat.enable= f.coat> 0; ch.ClearCoat.factor= f.coat; }
+  if (ch.ClearCoatRoughness) ch.ClearCoatRoughness.factor= f.coatRough;
+  if (ch.EmitColor&& ch.EmitColor.texture){ delete ch.EmitColor.texture; ch.EmitColor.factor= 0; }
+}
+
+function aplicar(p){
+  const a= p.api;
+  p.cola= p.cola.then(async ()=> {
+    if (!a|| a!== api) return;
+    const def= JSON.parse(JSON.stringify(p.base));
+    if (p.pintura) pintarDef(def, p.pintura);
+    if (sel.has(p.id)) def.channels.EmitColor= {enable: true, type: 'additive', color: [1, 0.36, 0.14], factor: p.flash? 0.55: 0.16};
+    def.name= 'motos3d_'+ p.id;
+    if (!p.propio){
+      if (!p.pintura&& !sel.has(p.id)) return;
+      delete def.id;
+      const m= await llamar(a, 'createMaterial', def);
+      await llamar(a, 'assignMaterial', p.nodo, m.id);
+      p.propio= m.id;
+    }
+    else {
+      def.id= p.propio;
+      await llamar(a, 'setMaterial', def);
+    }
+  }).catch(()=> {});
+}
+
+function aplicarSolo(){
+  if (!api) return;
+  const todo= !solo|| !sel.size;
+  for (const p of piezas){
+    const ver= todo|| sel.has(p.id);
+    if (!ver&& !ocultas.has(p.id)){ ocultas.add(p.id); api.hide(p.id); }
+    else if (ver&& ocultas.has(p.id)){ ocultas.delete(p.id); api.show(p.id); }
+  }
+}
+
+function igual(a, b){
+  if (!a|| !b) return !a&& !b;
+  return a.hex.toLowerCase()=== b.hex.toLowerCase()&& a.acabado=== b.acabado;
+}
+function commit(lista){
+  const cambios= [];
+  for (const {id, despues} of lista){
+    const p= porId.get(id);
+    if (!p) continue;
+    const antes= p.pintura? {...p.pintura}: null;
+    if (igual(antes, despues)) continue;
+    p.pintura= despues;
+    aplicar(p);
+    cambios.push({id, antes, despues});
+  }
+  if (!cambios.length) return false;
+  deshacer.push(cambios);
+  if (deshacer.length> 100) deshacer.shift();
+  rehacer= [];
+  trasPintar();
+  return true;
+}
+function trasPintar(){
+  if (uid) store.set('m3d:pintura:'+ uid, Object.fromEntries(piezas.filter(p=> p.pintura).map(p=> [p.id, p.pintura])));
+  for (const p of piezas){
+    const el= filas.get(p.id);
+    if (!el) continue;
+    const d= el.firstElementChild;
+    d.classList.toggle('no', !p.pintura);
+    d.style.setProperty('--c', p.pintura? p.pintura.hex: 'transparent');
+  }
+  actualizarSel();
+  actualizarHistorial();
+}
+function undo(){
+  const ch= deshacer.pop();
+  if (!ch) return;
+  for (const c of ch){ const p= porId.get(c.id); if (p){ p.pintura= c.antes; aplicar(p); } }
+  rehacer.push(ch);
+  trasPintar();
+}
+function redo(){
+  const ch= rehacer.pop();
+  if (!ch) return;
+  for (const c of ch){ const p= porId.get(c.id); if (p){ p.pintura= c.despues; aplicar(p); } }
+  deshacer.push(ch);
+  trasPintar();
+}
+function actualizarHistorial(){
+  $('bUndo').disabled= !deshacer.length;
+  $('bRedo').disabled= !rehacer.length;
+}
+function pintarSel(hex){
+  if (!api){ aviso('Espera a que cargue el modelo.'); return; }
+  if (!sel.size){ aviso('Primero toca una pieza o usa «Todo el carenado».'); return; }
+  commit([...sel].map(id=> ({id, despues: {hex, acabado}})));
+}
+
+function actualizarSel(){
+  const lista= [...sel].map(id=> porId.get(id)).filter(Boolean);
+  const n= lista.length;
+  $('selCount').textContent= n? (n=== 1? '1 pieza': n+ ' piezas'): 'Nada seleccionado';
+  $('selNames').innerHTML= lista.slice(0, 12).map(p=> '<li>'+ esc(p.nombre)+ '</li>').join('')+ (n> 12? '<li>+'+ (n- 12)+ ' más</li>': '');
+  $('bClear').disabled= !n;
+  $('bReset').disabled= !lista.some(p=> p.pintura);
+  $('bTag').disabled= !n;
+  $('bSolo').disabled= !n&& !solo;
+  $('bTag').textContent= n&& lista.every(p=> p.grupo=== 'carenado')? 'Quitar del carenado': 'Marcar como carenado';
+  const car= piezas.filter(p=> p.grupo=== 'carenado');
+  $('bCarenado').disabled= !car.length;
+  $('bCarenado').setAttribute('aria-pressed', String(car.length> 0&& n=== car.length&& car.every(p=> sel.has(p.id))));
+  $('bResetAll').disabled= !piezas.some(p=> p.pintura);
+  for (const [id, el] of filas) el.setAttribute('aria-pressed', String(sel.has(id)));
+}
+
+function fila(p){
+  return '<button type="button" class="pz" data-id="'+ p.id+ '" aria-pressed="'+ sel.has(p.id)+ '"><span class="d'+ (p.pintura? '': ' no')+ '" style="--c:'+ (p.pintura? p.pintura.hex: 'transparent')+ '"></span><span>'+ esc(p.nombre)+ '</span></button>';
+}
+function pintarPiezas(){
+  const q= $('find').value.trim().toLowerCase();
+  let html= '';
+  for (const [g, t] of [['carenado', 'Carenado'], ['otras', 'Otras piezas']]){
+    const lista= piezas.filter(p=> p.grupo=== g&& (!q|| p.nombre.toLowerCase().includes(q)));
+    if (!lista.length) continue;
+    html+= '<div class="grp"><div class="gh"><h4>'+ t+ '<span>'+ lista.length+ '</span></h4><button type="button" data-grupo="'+ g+ '">Seleccionar</button></div><div class="plist'+ (lista.length> 14? ' largo': '')+ '">'+ lista.map(fila).join('')+ '</div></div>';
+  }
+  $('groups').innerHTML= html|| '<p class="empty">'+ (piezas.length? 'Ninguna pieza coincide con la búsqueda.': 'Las piezas aparecen cuando carga el modelo.')+ '</p>';
+  filas.clear();
+  for (const el of $('groups').querySelectorAll('.pz')) filas.set(Number(el.dataset.id), el);
+  $('pCount').textContent= piezas.length? piezas.length+ ' en total': '';
+  const nc= piezas.filter(p=> p.grupo=== 'carenado').length;
+  if (!piezas.length) $('cNote').textContent= 'Toca una pieza en la moto o usa «Todo el carenado».';
+  else if (piezas.length=== 1) $('cNote').textContent= 'Este modelo viene en una sola pieza, así que solo se puede pintar completo.';
+  else if (!nc) $('cNote').textContent= 'Este modelo no trae el carenado marcado. Selecciona sus piezas y usa «Marcar como carenado».';
+  else $('cNote').textContent= nc+ ' piezas de carenado. Toca una pieza en la moto o usa «Todo el carenado».';
+}
+
+function conCamara(){
+  return !!(preset&& preset.centro&& preset.dist&& preset.der&& preset.frente);
+}
+function pintarVistas(){
+  const lista= conCamara()? [['lateral', 'Lateral'], ['tres', '3/4'], ['frente', 'Frente'], ['atras', 'Atrás'], ['arriba', 'Arriba']]: [['inicio', 'Inicio'], ['izq', 'Girar a la izquierda'], ['der', 'Girar a la derecha'], ['arriba', 'Arriba']];
+  $('views').innerHTML= lista.map(([k, t])=> '<button type="button" data-view="'+ k+ '">'+ t+ '</button>').join('');
+}
+async function vista(k, dur= 1){
+  if (!api) return;
+  const a= api;
+  if (conCamara()){
+    const D= DIRS[k];
+    const v= [0, 1, 2].map(i=> preset.der[i]* D[0]+ preset.frente[i]* D[1]+ (i=== 2? D[2]: 0));
+    const L= Math.hypot(...v);
+    const d= preset.dist[k];
+    const c= preset.centro;
+    a.setCameraLookAt(c.map((x, i)=> x+ v[i]/ L* d), c, dur);
+    return;
+  }
+  try{
+    if (k=== 'inicio'){
+      if (camInicio) a.setCameraLookAt(camInicio.position, camInicio.target, dur);
+      else a.recenterCamera();
+      return;
+    }
+    const cam= await llamar(a, 'getCameraLookAt');
+    const t= cam.target;
+    const o= cam.position.map((x, i)=> x- t[i]);
+    const d= Math.hypot(...o);
+    let p;
+    if (k=== 'arriba') p= [t[0], t[1]- d* 0.03, t[2]+ d];
+    else {
+      const ang= (k=== 'izq'? 1: -1)* Math.PI/ 2;
+      const co= Math.cos(ang), si= Math.sin(ang);
+      p= [t[0]+ o[0]* co- o[1]* si, t[1]+ o[0]* si+ o[1]* co, t[2]+ o[2]];
+    }
+    a.setCameraLookAt(p, t, dur);
+  }catch(e){}
+}
+
+async function ficha(id){
+  if (fichas.has(id)) return fichas.get(id);
+  try{
+    const r= await fetch(API+ '/models/'+ id);
+    if (!r.ok) throw new Error(r.status);
+    const j= await r.json();
+    fichas.set(id, j);
+    return j;
+  }catch(e){ return null; }
+}
+function mostrarFicha(f){
+  const cat= CATALOGO.find(c=> c.uid=== uid);
+  const nombre= cat? cat.nombre: (f? f.name: 'Modelo 3D');
+  $('title').textContent= nombre;
+  document.title= nombre+ ' · Motos 3D';
+  if (!f){
+    $('author').textContent= '';
+    $('published').textContent= '';
+    $('stats').innerHTML= '';
+    $('avatar').hidden= true;
+    $('lic').innerHTML= '<a href="https://sketchfab.com/models/'+ uid+ '" target="_blank" rel="noopener">Ver en Sketchfab</a>';
+    $('desc').textContent= '';
+    $('bDesc').hidden= true;
+    return;
+  }
+  const u= f.user|| {};
+  const av= ((u.avatar&& u.avatar.images)|| []).slice().sort((a, b)=> a.width- b.width).find(i=> i.width>= 48);
+  $('avatar').hidden= !av;
+  if (av) $('avatar').src= av.url;
+  $('author').textContent= u.displayName|| u.username|| '';
+  $('author').href= u.profileUrl|| '#';
+  $('published').textContent= f.publishedAt? 'Publicado el '+ new Date(f.publishedAt).toLocaleDateString('es-CR', {year: 'numeric', month: 'long', day: 'numeric'}): '';
+  $('stats').innerHTML= '<span>'+ ICON_OJO+ fmt(f.viewCount)+ ' vistas</span><span>'+ ICON_CORAZON+ fmt(f.likeCount)+ ' me gusta</span><span>'+ ICON_MALLA+ fmt(f.faceCount)+ ' caras</span>';
+  const lic= f.license? '<span class="chip">'+ esc(f.license.label)+ '</span>': '<span class="chip">Solo visualización</span>';
+  const original= cat&& f.name&& f.name!== cat.nombre? '<span>Nombre en Sketchfab: «'+ esc(f.name)+ '»</span>': '';
+  $('lic').innerHTML= lic+ original+ '<a href="'+ esc(f.viewerUrl)+ '" target="_blank" rel="noopener">Ver en Sketchfab</a>';
+  const d= String(f.description|| '').replace(/<[^>]*>/g, '').trim();
+  $('desc').textContent= d;
+  $('desc').classList.remove('open');
+  $('bDesc').hidden= d.length< 220;
+  $('bDesc').textContent= 'Ver más';
+}
+
+function miniatura(f){
+  const imgs= ((f.thumbnails&& f.thumbnails.images)|| []).slice().sort((a, b)=> a.width- b.width);
+  const t= imgs.find(i=> i.width>= 300)|| imgs[imgs.length- 1];
+  return t? t.url: '';
+}
+function tarjeta(f, nombre){
+  const u= f.user|| {};
+  return '<button type="button" class="card" data-uid="'+ esc(f.uid)+ '" aria-current="'+ (f.uid=== uid)+ '"><img src="'+ esc(miniatura(f))+ '" alt="" loading="lazy" width="150" height="96"><span class="ci"><b>'+ esc(nombre|| f.name)+ '</b><small>'+ esc(u.displayName|| u.username|| '')+ ' · '+ fmt(f.viewCount)+ ' vistas</small></span></button>';
+}
+function marcarTarjetas(){
+  for (const c of document.querySelectorAll('.card')) c.setAttribute('aria-current', String(c.dataset.uid=== uid));
+}
+async function destacadas(){
+  $('sideTitle').textContent= 'Destacadas';
+  $('sideSub').textContent= 'Las motos del proyecto, listas para pintar pieza por pieza.';
+  $('bMore').hidden= true;
+  siguiente= null;
+  const fs= await Promise.all(CATALOGO.map(c=> ficha(c.uid)));
+  $('cards').innerHTML= CATALOGO.map((c, i)=> fs[i]? tarjeta(fs[i], c.nombre): '<button type="button" class="card" data-uid="'+ c.uid+ '"><img alt="" width="150" height="96"><span class="ci"><b>'+ esc(c.nombre)+ '</b><small>Sin datos de Sketchfab</small></span></button>').join('');
+  marcarTarjetas();
+}
+async function buscar(q, titulo){
+  $('sideTitle').textContent= titulo;
+  $('sideSub').textContent= 'Resultados de Sketchfab, solo motos.';
+  $('cards').innerHTML= '<p class="empty">Buscando motos…</p>';
+  $('bMore').hidden= true;
+  const url= API+ '/search?type=models&count=24&tags=motorcycle'+ (q&& q!== '*'? '&q='+ encodeURIComponent(q): '&categories=cars-vehicles&sort_by=-likeCount');
+  await resultados(url, false);
+}
+async function resultados(url, sumar){
+  try{
+    const r= await fetch(url);
+    if (!r.ok) throw new Error(r.status);
+    const j= await r.json();
+    const html= (j.results|| []).filter(m=> !m.isAgeRestricted).map(m=> tarjeta(m)).join('');
+    if (sumar) $('cards').insertAdjacentHTML('beforeend', html);
+    else $('cards').innerHTML= html|| '<p class="empty">No encontré motos con esa búsqueda. Prueba con la marca o el estilo.</p>';
+    siguiente= j.next|| null;
+    $('bMore').hidden= !siguiente;
+    marcarTarjetas();
+  }catch(e){
+    if (!sumar) $('cards').innerHTML= '<p class="empty">No se pudo conectar con Sketchfab. Revisa la conexión y prueba de nuevo.</p>';
+  }
+}
+
+function pintarCats(activa){
+  $('cats').innerHTML= CATS.map(([t, q], i)=> '<button type="button" data-i="'+ i+ '" aria-pressed="'+ (i=== activa)+ '">'+ esc(t)+ '</button>').join('');
+}
+function pintarColores(){
+  const chip= (nombre, hex, i)=> '<div class="c"><button type="button" data-hex="'+ hex+ '" title="'+ esc(nombre)+ ' '+ hex.toUpperCase()+ '" aria-label="Aplicar '+ esc(nombre)+ '"><span class="s" style="--c:'+ hex+ '"></span><span class="n">'+ esc(nombre)+ '</span></button>'+ (i>= 0? '<button type="button" class="x" data-del="'+ i+ '" aria-label="Quitar '+ esc(nombre)+ ' de mis colores">×</button>': '')+ '</div>';
+  $('sw').innerHTML= BASE.map(([n, h])=> chip(n, h, -1)).join('');
+  $('mine').innerHTML= misColores.length? misColores.map((c, i)=> chip(c.nombre|| c.hex.toUpperCase(), c.hex, i)).join(''): '<p class="empty">Los colores que agregues quedan aquí guardados.</p>';
+}
+function pintarAcabado(){
+  $('seg').innerHTML= Object.entries(ACABADOS).map(([k, f])=> '<button type="button" role="radio" data-acabado="'+ k+ '" aria-checked="'+ (k=== acabado)+ '">'+ f.nombre+ '</button>').join('');
+}
+function normHex(v){
+  let s= String(v).trim().replace(/^#?/, '#');
+  if (/^#[0-9a-f]{3}$/i.test(s)) s= '#'+ s.slice(1).split('').map(c=> c+ c).join('');
+  return /^#[0-9a-f]{6}$/i.test(s)? s.toLowerCase(): null;
+}
+
+function inicial(){
+  return matchMedia('(max-width: 760px)').matches? 'e346487f74504cc780a4aa6b92c5ee24': CATALOGO[0].uid;
+}
+function ruta(){
+  const h= location.hash.slice(1);
+  const id= /^[0-9a-f]{32}$/.test(h)? h: inicial();
+  if (id!== uid) cargar(id);
+}
+
+$('cards').addEventListener('click', e=> {
+  const c= e.target.closest('.card');
+  if (!c) return;
+  const id= c.dataset.uid;
+  if (location.hash.slice(1)=== id){ if (uid!== id) cargar(id); }
+  else location.hash= id;
+  $('viewer').scrollIntoView({behavior: 'smooth', block: 'start'});
+});
+$('bMore').addEventListener('click', ()=> { if (siguiente) resultados(siguiente, true); });
+$('cats').addEventListener('click', e=> {
+  const b= e.target.closest('[data-i]');
+  if (!b) return;
+  const i= Number(b.dataset.i);
+  const [t, q]= CATS[i];
+  pintarCats(i);
+  if (!q) destacadas();
+  else buscar(q, t=== 'Todas'? 'Todas las motos': t);
+});
+$('fSearch').addEventListener('submit', e=> {
+  e.preventDefault();
+  const q= $('q').value.trim();
+  if (!q) return;
+  pintarCats(-1);
+  buscar(q, 'Resultados para «'+ q+ '»');
+});
+$('home').addEventListener('click', e=> {
+  e.preventDefault();
+  pintarCats(0);
+  destacadas();
+  location.hash= inicial();
+});
+$('views').addEventListener('click', e=> { const b= e.target.closest('[data-view]'); if (b) vista(b.dataset.view); });
+$('bCarenado').addEventListener('click', ()=> {
+  const ids= piezas.filter(p=> p.grupo=== 'carenado').map(p=> p.id);
+  if (!ids.length) return;
+  const todas= sel.size=== ids.length&& ids.every(id=> sel.has(id));
+  fijarSel(todas? []: ids);
+});
+$('bSolo').addEventListener('click', ()=> {
+  if (!solo&& !sel.size){ aviso('Selecciona piezas para verlas solas.'); return; }
+  solo= !solo;
+  $('bSolo').setAttribute('aria-pressed', String(solo));
+  aplicarSolo();
+  actualizarSel();
+});
+$('bMulti').addEventListener('click', ()=> {
+  multi= !multi;
+  $('bMulti').setAttribute('aria-pressed', String(multi));
+  aviso(multi? 'Cada toque suma o quita piezas de la selección.': 'Cada toque selecciona una sola pieza.');
+});
+$('bAnim').addEventListener('click', ()=> {
+  if (!api|| !preset|| !preset.anim) return;
+  const a= api, fin= preset.anim;
+  if (animTimer){
+    clearTimeout(animTimer);
+    animTimer= 0;
+    a.pause();
+    a.seekTo(fin);
+    $('bAnim').textContent= 'Ver armado';
+    return;
+  }
+  a.setCycleMode('one');
+  a.seekTo(0);
+  a.play();
+  $('bAnim').textContent= 'Detener';
+  animTimer= setTimeout(()=> { animTimer= 0; a.pause(); a.seekTo(fin); $('bAnim').textContent= 'Ver armado'; }, (fin+ 0.5)* 1000);
+});
+$('bShot').addEventListener('click', ()=> {
+  if (!api) return;
+  api.getScreenShot(1920, 1200, 'image/png', (err, url)=> {
+    if (err|| !url){ aviso('No se pudo guardar la imagen.'); return; }
+    const a= document.createElement('a');
+    a.href= url;
+    a.download= ($('title').textContent|| 'moto').replace(/[^\wáéíóúñÁÉÍÓÚÑ\-]+/g, '_')+ '.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+});
+$('bDesc').addEventListener('click', ()=> {
+  const abierta= $('desc').classList.toggle('open');
+  $('bDesc').textContent= abierta? 'Ver menos': 'Ver más';
+});
+$('groups').addEventListener('click', e=> {
+  const g= e.target.closest('[data-grupo]');
+  if (g){
+    const ids= piezas.filter(p=> p.grupo=== g.dataset.grupo).map(p=> p.id);
+    if (ids.every(id=> sel.has(id))){ const antes= new Set(sel); for (const id of ids) sel.delete(id); refrescarSel(antes); }
+    else fijarSel(multi? [...sel, ...ids]: ids);
+    return;
+  }
+  const r= e.target.closest('.pz');
+  if (r) alternar(Number(r.dataset.id));
+});
+$('find').addEventListener('input', pintarPiezas);
+$('bClear').addEventListener('click', ()=> fijarSel([]));
+$('bReset').addEventListener('click', ()=> commit([...sel].map(id=> ({id, despues: null}))));
+$('bTag').addEventListener('click', ()=> {
+  const lista= [...sel].map(id=> porId.get(id)).filter(Boolean);
+  const todas= lista.every(p=> p.grupo=== 'carenado');
+  for (const p of lista) p.grupo= todas? (p.grupo0!== 'carenado'? p.grupo0: 'otras'): 'carenado';
+  const tags= {};
+  for (const p of piezas) if (p.grupo!== p.grupo0) tags[p.id]= p.grupo;
+  store.set('m3d:carenado:'+ uid, tags);
+  pintarPiezas();
+  actualizarSel();
+  aviso(todas? 'Esas piezas salieron del carenado.': 'Esas piezas ahora son parte del carenado.');
+});
+$('bUndo').addEventListener('click', undo);
+$('bRedo').addEventListener('click', redo);
+$('bResetAll').addEventListener('click', ()=> {
+  const lista= piezas.filter(p=> p.pintura).map(p=> ({id: p.id, despues: null}));
+  if (commit(lista)) aviso('Se quitaron todos los colores. Con «Deshacer» los recuperas.');
+});
+$('sw').addEventListener('click', e=> { const b= e.target.closest('[data-hex]'); if (b) pintarSel(b.dataset.hex); });
+$('mine').addEventListener('click', e=> {
+  const x= e.target.closest('[data-del]');
+  if (x){
+    misColores.splice(Number(x.dataset.del), 1);
+    store.set('m3d:colores', misColores);
+    pintarColores();
+    return;
+  }
+  const b= e.target.closest('[data-hex]');
+  if (b) pintarSel(b.dataset.hex);
+});
+$('pick').addEventListener('input', ()=> { $('hex').value= $('pick').value.toUpperCase(); });
+$('hex').addEventListener('input', ()=> { const v= normHex($('hex').value); if (v) $('pick').value= v; });
+$('fAdd').addEventListener('submit', e=> {
+  e.preventDefault();
+  const hex= normHex($('hex').value);
+  if (!hex){ aviso('Escribe un color válido, por ejemplo #1F3FD1.'); return; }
+  const nombre= $('cname').value.trim().slice(0, 24);
+  if (!misColores.some(c=> c.hex=== hex&& (c.nombre|| '')=== nombre)) misColores.push({hex, nombre});
+  store.set('m3d:colores', misColores);
+  $('cname').value= '';
+  pintarColores();
+  if (sel.size) pintarSel(hex);
+  else aviso('Listo, el color quedó en «Mis colores».');
+});
+$('seg').addEventListener('click', e=> {
+  const b= e.target.closest('[data-acabado]');
+  if (!b) return;
+  acabado= b.dataset.acabado;
+  store.set('m3d:acabado', acabado);
+  pintarAcabado();
+  const lista= [...sel].map(id=> porId.get(id)).filter(p=> p&& p.pintura).map(p=> ({id: p.id, despues: {hex: p.pintura.hex, acabado}}));
+  if (lista.length) commit(lista);
+  else if (sel.size) aviso('El acabado se usa cuando eliges un color.');
+});
+addEventListener('keydown', e=> {
+  if (e.target.closest('input, textarea')) return;
+  const mod= e.ctrlKey|| e.metaKey;
+  const k= e.key.toLowerCase();
+  if (mod&& k=== 'z'){ e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+  else if (mod&& k=== 'y'){ e.preventDefault(); redo(); }
+  else if (e.key=== 'Escape') fijarSel([]);
+});
+addEventListener('hashchange', ruta);
+
+window.motos3d= {
+  exportar(){
+    const carenado= {};
+    for (const p of piezas) if (p.grupo=== 'carenado') carenado[p.id]= p.nombre;
+    return JSON.stringify({uid, carenado}, null, 2);
+  }
+};
+
+pintarCats(0);
+pintarColores();
+pintarAcabado();
+destacadas();
+ruta();
+}
+</script>
+</body>
+</html>
