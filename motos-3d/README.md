@@ -9,6 +9,8 @@ Web tipo Sketchfab pero solo de motos. Cada moto se ve con el visor oficial de S
 - Personalizar: tocar una pieza en la moto la selecciona y «Todo el carenado» agarra todas las piezas de carrocería de un solo toque.
 - Colores base y «Mis colores». Cada persona agrega los suyos con selector, código HEX y nombre, y quedan guardados en su navegador.
 - Acabados: brillante, metalizado, satinado, mate y cromado.
+- «Combinaciones» de dos tonos y el botón «Sorpréndeme», que arma una combinación al azar para todo el carenado. El tanque, el frontal y el colín llevan el color principal y los laterales el segundo.
+- «Compartir» crea un link con el diseño. Quien lo abre ve la moto pintada igual. En el celular abre el menú de compartir, por ejemplo para mandarlo por WhatsApp.
 - Deshacer y rehacer, quitar color, restablecer, «Solo selección», «Varias» (para seleccionar varias piezas en el celular), vistas de cámara, «Ver armado» (la animación de armado de la R3) y «Captura» para bajar una imagen.
 
 ## Motos incluidas

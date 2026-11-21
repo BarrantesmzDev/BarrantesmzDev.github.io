@@ -80,6 +80,10 @@ h1,h2,h3,h4{font-family:"Saira Condensed",Barlow,sans-serif;margin:0;line-height
 .btn{min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-weight:600;font-size:15px}
 .btn:hover:not(:disabled){border-color:var(--ink)}
 .btn.wide{width:100%;margin-top:14px}
+.combos{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}
+.combos .n{white-space:normal;overflow:visible;line-height:1.2}
+.btn.sorpresa{width:100%;margin-top:14px;background:var(--accent);border-color:var(--accent);color:#fff;font-size:16px}
+.btn.sorpresa:hover:not(:disabled){background:var(--accent-2);border-color:var(--accent-2)}
 .sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:12px 10px;margin-top:10px}
 .sw .empty{grid-column:1/-1;margin:0}
 .c{position:relative}
@@ -151,6 +155,7 @@ h1,h2,h3,h4{font-family:"Saira Condensed",Barlow,sans-serif;margin:0;line-height
       <button type="button" id="bMulti" aria-pressed="false">Varias</button>
       <button type="button" id="bAnim" hidden>Ver armado</button>
       <button type="button" id="bShot" class="push" disabled>Captura</button>
+      <button type="button" id="bShare" disabled>Compartir</button>
     </div>
     <section class="info" aria-labelledby="title">
       <h1 id="title">Motos 3D</h1>
@@ -171,6 +176,11 @@ h1,h2,h3,h4{font-family:"Saira Condensed",Barlow,sans-serif;margin:0;line-height
               <button type="button" class="btn" id="bReset" disabled>Quitar color</button>
               <button type="button" class="btn" id="bTag" disabled>Marcar como carenado</button>
             </div>
+          </div>
+          <div class="blk">
+            <h3>Combinaciones <small>para todo el carenado</small></h3>
+            <div class="sw combos" id="combos"></div>
+            <button type="button" class="btn sorpresa" id="bSorpresa">Sorpréndeme</button>
           </div>
           <div class="blk">
             <h3>Color <small>se aplica a lo seleccionado</small></h3>
@@ -266,6 +276,21 @@ const ACABADOS= {
 };
 const BASE= [['Negro', '#121316'], ['Blanco', '#f1f1ee'], ['Plata', '#a9adb2'], ['Grafito', '#45484d'], ['Azul', '#1f3fd1'], ['Celeste', '#3aa6e8'], ['Rojo', '#c4161c'], ['Naranja', '#ee6a1b'], ['Amarillo', '#f3c300'], ['Verde', '#1f8a43']];
 const CATS= [['Destacadas', ''], ['Todas', '*'], ['Deportivas', 'sport bike'], ['Naked', 'naked'], ['Doble propósito', 'adventure'], ['Motocross', 'motocross'], ['Scooters', 'scooter'], ['Clásicas', 'cafe racer'], ['Custom', 'chopper'], ['Yamaha', 'yamaha'], ['Honda', 'honda'], ['Suzuki', 'suzuki'], ['Kawasaki', 'kawasaki'], ['KTM', 'ktm'], ['Ducati', 'ducati'], ['BMW', 'bmw'], ['Harley-Davidson', 'harley']];
+const COMBOS= [
+  {nombre: 'Azul carreras', colores: ['#1f3fd1', '#f1f1ee', '#121316'], acabado: 'brillante'},
+  {nombre: 'Negro mate', colores: ['#141517', '#141517', '#141517'], acabado: 'mate'},
+  {nombre: 'Negro y verde', colores: ['#121316', '#56d11c', '#121316'], acabado: 'satinado'},
+  {nombre: 'Rojo y blanco', colores: ['#c4161c', '#f1f1ee', '#121316'], acabado: 'brillante'},
+  {nombre: 'Gris cemento', colores: ['#8a8d8f', '#8a8d8f', '#121316'], acabado: 'satinado'},
+  {nombre: 'Amarillo y negro', colores: ['#f3c300', '#121316', '#121316'], acabado: 'brillante'},
+  {nombre: 'Blanco y celeste', colores: ['#f1f1ee', '#3aa6e8', '#121316'], acabado: 'brillante'},
+  {nombre: 'Naranja metálico', colores: ['#ee6a1b', '#121316', '#121316'], acabado: 'metalizado'}
+];
+const TONOS= [[0, 'Rojo'], [22, 'Naranja'], [46, 'Amarillo'], [85, 'Verde lima'], [135, 'Verde'], [178, 'Turquesa'], [212, 'Azul'], [238, 'Azul índigo'], [272, 'Morado'], [318, 'Fucsia']];
+const CODIGOS= {b: 'brillante', m: 'metalizado', s: 'satinado', t: 'mate', c: 'cromado'};
+const LETRA= {brillante: 'b', metalizado: 'm', satinado: 's', mate: 't', cromado: 'c'};
+const ROL2= /lateral|plateado|tapa|panel/i;
+const ROL3= /inferior|negro|detalle|protector|moldura|frente del/i;
 const SI= /(carena|fairing|cowl|carroc|bodywork|body|tanque|tank|fuel|fender|guardabarro|mudguard|colin|colín|tail|cola|tapa|panel|cover|shroud|plastic|plástico|plastico|paint|pintura|livery)/i;
 const NO= /(glass|vidrio|cristal|windscreen|windshield|parabrisas|chrome|cromo|tire|tyre|llanta|neum|rubber|caucho|rim\b|rin\b|wheel|rueda|disc|disco|brake|freno|caliper|engine|motor|exhaust|escape|muffler|chain|cadena|frame|chasis|chassis|fork|horquilla|shock|amort|seat|asiento|light|luz|faro|lamp|mirror|espejo|handle|manubrio|mango|grip|bolt|tornillo|screw|cable|steel|acero|edge)/i;
 const GENERICO= /^(pieza|material|mat|default|lambert|phong|blinn|standard|surface|aistandardsurface|object|objeto|mesh|malla|node|nodo|geometry|group|grupo|simetrico|no simetrico|color)$/i;
@@ -285,7 +310,7 @@ const store= {
 let api= null, uid= null, preset= null, token= 0, camInicio= null, animTimer= 0, siguiente= null;
 let piezas= [], porId= new Map();
 const sel= new Set(), ocultas= new Set(), filas= new Map(), fichas= new Map();
-let multi= false, solo= false, deshacer= [], rehacer= [];
+let multi= false, solo= false, deshacer= [], rehacer= [], diseno= null;
 let acabado= ACABADOS[store.get('m3d:acabado', 'brillante')]? store.get('m3d:acabado', 'brillante'): 'brillante';
 let misColores= store.get('m3d:colores', []).filter(c=> c&& /^#[0-9a-f]{6}$/i.test(c.hex));
 
@@ -343,6 +368,7 @@ function cargar(id){
   $('bAnim').hidden= !(preset&& preset.anim);
   $('bAnim').textContent= 'Ver armado';
   $('bShot').disabled= true;
+  $('bShare').disabled= true;
   $('views').innerHTML= '';
   $('hover').classList.remove('on');
   pintarPiezas();
@@ -376,7 +402,7 @@ async function listo(a, mio){
     const [mats, mapa]= await Promise.all([llamar(a, 'getMaterialList'), llamar(a, 'getNodeMap')]);
     if (mio!== token) return;
     api= a;
-    armarPiezas(mats, mapa);
+    const compartido= armarPiezas(mats, mapa);
     a.addEventListener('click', alClic, {pick: 'slow'});
     a.addEventListener('nodeMouseEnter', i=> mostrarHover(i&& i.instanceID), {pick: 'fast'});
     a.addEventListener('nodeMouseLeave', ()=> mostrarHover(null), {pick: 'fast'});
@@ -389,6 +415,13 @@ async function listo(a, mio){
     actualizarSel();
     actualizarHistorial();
     $('bShot').disabled= false;
+    $('bShare').disabled= false;
+    if (compartido){
+      diseno= null;
+      store.set('m3d:pintura:'+ uid, Object.fromEntries(piezas.filter(p=> p.pintura).map(p=> [p.id, p.pintura])));
+      history.replaceState(null, '', '#'+ uid);
+      aviso('Este es el diseño que te compartieron.');
+    }
   }catch(e){
     if (mio=== token) mensaje('El visor no respondió', 'Prueba recargar la página.');
   }
@@ -397,7 +430,8 @@ async function listo(a, mio){
 function armarPiezas(mats, mapa){
   const porMat= new Map(mats.map(m=> [m.id, m]));
   const tags= store.get('m3d:carenado:'+ uid, {});
-  const guardado= store.get('m3d:pintura:'+ uid, {});
+  const compartido= diseno&& diseno.uid=== uid? diseno.mapa: null;
+  const guardado= compartido|| store.get('m3d:pintura:'+ uid, {});
   const ocultar= new Set(preset&& preset.ocultar|| []);
   const excluir= new Set(preset&& preset.excluir|| []);
   const conteo= new Map();
@@ -427,6 +461,7 @@ function armarPiezas(mats, mapa){
     const k= p.nombre.toLowerCase();
     if (conteo.get(k)> 1){ const i= (vistos.get(k)|| 0)+ 1; vistos.set(k, i); p.nombre= p.nombre+ ' '+ i; }
   }
+  return !!compartido;
 }
 
 function alClic(info){
@@ -764,10 +799,80 @@ function normHex(v){
 function inicial(){
   return matchMedia('(max-width: 760px)').matches? 'e346487f74504cc780a4aa6b92c5ee24': CATALOGO[0].uid;
 }
+function leerHash(){
+  const [u, d]= location.hash.slice(1).split('~');
+  return {u: /^[0-9a-f]{32}$/.test(u|| '')? u: null, d: d|| ''};
+}
 function ruta(){
-  const h= location.hash.slice(1);
-  const id= /^[0-9a-f]{32}$/.test(h)? h: inicial();
+  const {u, d}= leerHash();
+  const id= u|| inicial();
+  if (d) diseno= {uid: id, mapa: decodificar(d)};
   if (id!== uid) cargar(id);
+  else if (diseno&& api) aplicarDiseno();
+}
+function aplicarDiseno(){
+  if (!diseno|| diseno.uid!== uid) return;
+  const mapa= diseno.mapa;
+  diseno= null;
+  commit(piezas.map(p=> ({id: p.id, despues: mapa[p.id]|| null})));
+  history.replaceState(null, '', '#'+ uid);
+  aviso('Este es el diseño que te compartieron.');
+}
+function codificar(){
+  return piezas.filter(p=> p.pintura).map(p=> p.id+ '.'+ p.pintura.hex.slice(1)+ '.'+ (LETRA[p.pintura.acabado]|| 'b')).join(',');
+}
+function decodificar(d){
+  const out= {};
+  for (const t of d.split(',')){
+    const [id, hex, f]= t.split('.');
+    if (/^\d+$/.test(id|| '')&& /^[0-9a-f]{6}$/i.test(hex|| '')) out[id]= {hex: '#'+ hex.toLowerCase(), acabado: CODIGOS[f]|| 'brillante'};
+  }
+  return out;
+}
+async function compartir(){
+  if (!uid) return;
+  const cod= codificar();
+  const url= location.origin+ location.pathname+ '#'+ uid+ (cod? '~'+ cod: '');
+  const titulo= $('title').textContent;
+  if (navigator.share){
+    try{ await navigator.share({title: titulo+ ' · Motos 3D', text: cod? 'Mira cómo quedó mi '+ titulo: titulo, url}); return; }
+    catch(e){ if (e&& e.name=== 'AbortError') return; }
+  }
+  try{ await navigator.clipboard.writeText(url); aviso(cod? 'Link de tu diseño copiado, ya lo puedes pegar en WhatsApp.': 'Link copiado.'); }
+  catch(e){ aviso('No se pudo copiar el link.'); }
+}
+function rol(p){
+  return ROL3.test(p.nombre)? 2: ROL2.test(p.nombre)? 1: 0;
+}
+function hexHsl(h, s, l){
+  s/= 100;
+  l/= 100;
+  const k= n=> (n+ h/ 30)% 12;
+  const a= s* Math.min(l, 1- l);
+  const f= n=> l- a* Math.max(-1, Math.min(k(n)- 3, 9- k(n), 1));
+  return '#'+ [f(0), f(8), f(4)].map(v=> Math.round(v* 255).toString(16).padStart(2, '0')).join('');
+}
+function aplicarCombo(colores, ac){
+  if (!api){ aviso('Espera a que cargue el modelo.'); return false; }
+  const car= piezas.filter(p=> p.grupo=== 'carenado');
+  const lista= car.length? car: piezas.filter(p=> sel.has(p.id));
+  if (!lista.length){ aviso('Este modelo no trae el carenado marcado. Selecciona piezas y prueba de nuevo.'); return false; }
+  commit(lista.map(p=> ({id: p.id, despues: {hex: colores[rol(p)]|| colores[0], acabado: ac}})));
+  if (matchMedia('(max-width: 760px)').matches) $('viewer').scrollIntoView({behavior: 'smooth', block: 'start'});
+  return true;
+}
+function sorprender(){
+  const [h, nombre]= TONOS[Math.floor(Math.random()* TONOS.length)];
+  const tono= (h+ Math.random()* 14- 7+ 360)% 360;
+  const primario= hexHsl(tono, 72+ Math.random()* 20, 38+ Math.random()* 12);
+  const opciones= [['#f1f1ee', 'blanco'], ['#121316', 'negro'], ['#a9adb2', 'plata'], [hexHsl((tono+ 180)% 360, 75, 48), 'un toque de contraste']];
+  const [segundo, nombre2]= opciones[Math.floor(Math.random()* opciones.length)];
+  const lista= ['brillante', 'brillante', 'metalizado', 'satinado', 'mate'];
+  const ac= lista[Math.floor(Math.random()* lista.length)];
+  if (aplicarCombo([primario, segundo, '#121316'], ac)) aviso('Sorpresa: '+ nombre+ ' '+ ACABADOS[ac].nombre.toLowerCase()+ ' con '+ nombre2+ '. ¿Otra?');
+}
+function pintarCombos(){
+  $('combos').innerHTML= COMBOS.map((c, i)=> '<div class="c"><button type="button" data-combo="'+ i+ '" title="'+ esc(c.nombre)+ '" aria-label="Aplicar combinación '+ esc(c.nombre)+ '"><span class="s" style="--c:linear-gradient(135deg,'+ c.colores[0]+ ' 0 55%,'+ c.colores[1]+ ' 55% 82%,'+ c.colores[2]+ ' 82%)"></span><span class="n">'+ esc(c.nombre)+ '</span></button></div>').join('');
 }
 
 $('cards').addEventListener('click', e=> {
@@ -779,6 +884,14 @@ $('cards').addEventListener('click', e=> {
   $('viewer').scrollIntoView({behavior: 'smooth', block: 'start'});
 });
 $('bMore').addEventListener('click', ()=> { if (siguiente) resultados(siguiente, true); });
+$('combos').addEventListener('click', e=> {
+  const b= e.target.closest('[data-combo]');
+  if (!b) return;
+  const c= COMBOS[Number(b.dataset.combo)];
+  if (aplicarCombo(c.colores, c.acabado)) aviso('Combinación «'+ c.nombre+ '» aplicada.');
+});
+$('bSorpresa').addEventListener('click', sorprender);
+$('bShare').addEventListener('click', compartir);
 $('cats').addEventListener('click', e=> {
   const b= e.target.closest('[data-i]');
   if (!b) return;
@@ -940,6 +1053,7 @@ window.motos3d= {
 
 pintarCats(0);
 pintarColores();
+pintarCombos();
 pintarAcabado();
 destacadas();
 ruta();
