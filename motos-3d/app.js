@@ -6,7 +6,7 @@ import {OutlinePass} from 'three/addons/postprocessing/OutlinePass.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {HorizontalBlurShader} from 'three/addons/shaders/HorizontalBlurShader.js';
 import {VerticalBlurShader} from 'three/addons/shaders/VerticalBlurShader.js';
-import {crearMoto, GRUPOS, ACABADOS, aplicarAcabado} from './moto.js?v=20261121b';
+import {cargarMoto, GRUPOS, ACABADOS, aplicarAcabado} from './moto-r3.js?v=20261121r3';
 
 const $= id=> document.getElementById(id);
 const esc= s=> String(s).replace(/[&<>"']/g, c=> ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[c]);
@@ -52,10 +52,10 @@ const COMBOS= [
   {nombre: 'Tornasol', r: {base: ['#3d3f9a', 'tornasol'], detalle: ['#1c1c1e', 'carbono'], acento: ['#35d0e6', 'brillante'], oscuro: ['#121316', 'satinado'], ruedas: ['#1c1c1e', 'brillante'], chasis: ['#1c1c1e', 'satinado'], freno: ['#35d0e6', 'anodizado']}},
   {nombre: 'Carbono y oro', r: {base: ['#2a2a2c', 'carbono'], detalle: ['#141518', 'brillante'], acento: ['#c9a43a', 'metalizado'], oscuro: ['#121316', 'mate'], ruedas: ['#c9a43a', 'metalizado'], chasis: ['#141518', 'satinado'], freno: ['#c9a43a', 'anodizado']}}
 ];
-const CARENADO= ['nariz', 'lat-sup-d', 'lat-sup-i', 'toma-d', 'toma-i', 'lat-inf-d', 'lat-inf-i', 'quilla', 'toma-frontal', 'guarda-del', 'cubre-tanque', 'tapa-tanque-d', 'tapa-tanque-i', 'tapa-asiento-d', 'tapa-asiento-i', 'colin-d', 'colin-i', 'tapa-colin', 'bandeja'];
+let CARENADO= [];
 const VISTAS= {tres: [1, 0.36, 0.92], izq: [0.02, 0.1, -1], der: [0.02, 0.1, 1], frente: [1, 0.14, 0.001], atras: [-1, 0.2, 0.001], arriba: [0.0005, 1, 0.0003]};
-const DIR_MINI= {der: [0.3, 0.22, 1], izq: [0.3, 0.22, -1], centro: [1, 0.5, 0.75], arriba: [0.35, 1, 0.55], abajo: [0.3, -0.75, 0.75], frente: [1, 0.25, 0.4]};
-const MINI_ESPECIAL= {'cubre-tanque': 'arriba', 'tapa-colin': 'arriba', 'quilla': 'abajo', 'bandeja': 'abajo', 'toma-frontal': 'frente', 'nariz': 'frente', 'faro': 'frente', 'tapa-gas': 'arriba', 'guarda-del': 'frente'};
+const DIR_MINI= {der: [0.3, 0.22, 1], izq: [0.3, 0.22, -1], centro: [1, 0.5, 0.75], arriba: [0.35, 1, 0.55], abajo: [0.3, -0.75, 0.75], frente: [1, 0.25, 0.4], atras: [-1, 0.35, 0.45]};
+const MINI_ESPECIAL= {'frontal': 'frente', 'frente-int': 'frente', 'rejilla': 'frente', 'faro': 'frente', 'guarda-del': 'frente', 'burbuja': 'frente', 'tanque-sup': 'arriba', 'tapa-gas': 'arriba', 'colin-base': 'arriba', 'asiento': 'arriba', 'asiento-pas': 'arriba', 'bandeja': 'abajo', 'stop': 'atras', 'portaplaca': 'atras', 'placa': 'atras', 'direc-tras': 'atras', 'interior': 'arriba', 'tablero': 'arriba'};
 
 const escena= $('escena');
 const lienzo= $('lienzo');
@@ -238,7 +238,7 @@ function difuminar(a){
   blur.visible= false;
 }
 
-let piezas= [], porId= new Map(), moto= null;
+let piezas= [], porId= new Map(), moto= null, relleno= null;
 const actual= new Map();
 const sel= new Set();
 let principal= null, hover= null;
@@ -353,7 +353,7 @@ function cambioSeleccion(animar){
   $('selNombre').textContent= d? d.nombre: 'Nada seleccionado';
   const ps= ids.map(i=> porId.get(i));
   const soloLuces= ps.length&& ps.every(p=> !p.pintable);
-  $('selSub').textContent= !d? (tactil? 'Toca una pieza de la moto o elígela en Piezas': 'Haz clic en una pieza o elígela en Piezas'): soloLuces? 'Las luces no se pintan': ps.some(p=> p.tipo=== 'vidrio')? d.sub+ ' · la burbuja lleva tinte': d.sub;
+  $('selSub').textContent= !d? (tactil? 'Toca una pieza de la moto o elígela en Piezas': 'Haz clic en una pieza o elígela en Piezas'): soloLuces? noSePinta(ps): ps.some(p=> p.tipo=== 'vidrio')? d.sub+ ' · la burbuja lleva tinte': d.sub;
   for (const [id, el] of filas) el.setAttribute('aria-pressed', sel.has(id)? 'true': 'false');
   $('bCarenado').setAttribute('aria-pressed', CARENADO.every(i=> sel.has(i))&& sel.size=== CARENADO.length? 'true': 'false');
   marcarColores();
@@ -362,6 +362,9 @@ function cambioSeleccion(animar){
   pedir();
 }
 
+function noSePinta(ps){
+  return ps.every(p=> p.tipo=== 'luz')? 'Las luces no se pintan': 'Esta pieza no se pinta';
+}
 function ponerFotoSel(){
   const p= principal&& porId.get(principal);
   const img= $('selImg');
@@ -385,6 +388,7 @@ function marcarColores(){
 }
 
 function aplicarSolo(){
+  if (relleno) relleno.visible= !(solo&& sel.size)&& despiece< 0.02;
   for (const p of piezas){
     const ver= !solo|| !sel.size|| sel.has(p.id);
     for (const m of p.mallas){
@@ -458,7 +462,7 @@ function pintarSeleccion(hex){
   }
   const ps= [...sel].map(i=> porId.get(i)).filter(p=> p.pintable);
   if (!ps.length){
-    aviso('Las luces no se pintan');
+    aviso(noSePinta([...sel].map(i=> porId.get(i))));
     return;
   }
   const cambios= ps.map(p=> [p.id, {...pintura(p)}, {hex, acabado: p.tipo=== 'vidrio'? 'vidrio': acabadoActual}]);
@@ -493,7 +497,7 @@ function aviso(txt, conDeshacer= false){
 }
 
 function guardarDiseno(){
-  guardado.poner('m3d:diseno', codificar());
+  guardado.poner('m3d:r3:diseno', codificar());
 }
 function codificar(){
   const partes= [];
@@ -552,6 +556,7 @@ function reiniciar(){
 const rt1= new THREE.WebGLRenderTarget(1, 1);
 const buf= new Uint8Array(4);
 const matsPick= [];
+const matTapa= new THREE.MeshBasicMaterial({color: 0x000000, toneMapped: false});
 function matPick(i){
   if (!matsPick[i]){
     const n= i+ 1;
@@ -579,6 +584,7 @@ function elegir(cx, cy){
       if (fant) m.visible= false;
     }
   }
+  if (relleno) relleno.traverse(m=> { if (m.isMesh){ m.userData.matP= m.material; m.material= matTapa; } });
   const alfa= renderer.getClearAlpha();
   renderer.setClearColor(0x000000, 0);
   renderer.setRenderTarget(rt1);
@@ -591,6 +597,7 @@ function elegir(cx, cy){
     m.material= m.userData.matP;
     m.visible= m.userData.visP;
   }
+  if (relleno) relleno.traverse(m=> { if (m.isMesh) m.material= m.userData.matP; });
   scene.background= bg;
   sombra.plano&& (sombra.plano.visible= true);
   camara.clearViewOffset();
@@ -806,6 +813,7 @@ function fijarDespiece(on, cantidad){
 function moverDespiece(k){
   despiece= k;
   for (const p of piezas) p.obj.position.copy(p.explota).multiplyScalar(k);
+  if (relleno) relleno.visible= k< 0.02&& !(solo&& sel.size);
 }
 
 let tSombra= 0;
@@ -828,6 +836,8 @@ function hacerMinis(limite){
   scene.background= null;
   if (sombra.plano) sombra.plano.visible= false;
   const vis= piezas.map(p=> p.obj.visible);
+  const visR= relleno? relleno.visible: false;
+  if (relleno) relleno.visible= false;
   const pos= piezas.map(p=> p.obj.position.clone());
   const alfa= renderer.getClearAlpha();
   renderer.setClearColor(0x000000, 0);
@@ -872,6 +882,7 @@ function hacerMinis(limite){
     p.obj.visible= vis[i];
     p.obj.position.copy(pos[i]);
   });
+  if (relleno) relleno.visible= visR;
   renderer.setScissorTest(false);
   renderer.setViewport(0, 0, r.width, r.height);
   renderer.setClearAlpha(alfa);
@@ -1090,7 +1101,7 @@ function eventos(){
   $('bCarenado').addEventListener('click', ()=> {
     const todo= CARENADO.every(i=> sel.has(i))&& sel.size=== CARENADO.length;
     if (todo) limpiarSeleccion();
-    else fijarSeleccion(CARENADO, 'lat-sup-d');
+    else fijarSeleccion(CARENADO, 'lateral-d');
   });
   $('bSimetrico').setAttribute('aria-pressed', simetrico? 'true': 'false');
   $('bSimetrico').addEventListener('click', ()=> {
@@ -1201,10 +1212,10 @@ function ponerGiro(on){
 }
 
 function compartir(){
-  const url= location.origin+ location.pathname+ '#d='+ codificar();
-  history.replaceState(null, '', '#d='+ codificar());
+  const url= location.origin+ location.pathname+ '#r3='+ codificar();
+  history.replaceState(null, '', '#r3='+ codificar());
   if (navigator.share&& tactil){
-    navigator.share({title: 'Mi moto en Motos 3D', url}).catch(()=> {});
+    navigator.share({title: 'Mi R3 en Motos 3D', url}).catch(()=> {});
     return;
   }
   (navigator.clipboard? navigator.clipboard.writeText(url): Promise.reject()).then(()=> aviso('Link copiado. Quien lo abra ve tu moto con estos colores')).catch(()=> {
@@ -1220,7 +1231,7 @@ function foto(){
   pedir();
   const a= document.createElement('a');
   a.href= url;
-  a.download= 'mi-moto-3d.png';
+  a.download= 'mi-r3-3d.png';
   a.click();
   aviso('Foto descargada');
 }
@@ -1235,7 +1246,7 @@ async function descargarGlb(){
     const url= URL.createObjectURL(new Blob([datos], {type: 'model/gltf-binary'}));
     const a= document.createElement('a');
     a.href= url;
-    a.download= 'moto-deportiva-3d.glb';
+    a.download= 'yamaha-r3-pintada.glb';
     a.click();
     setTimeout(()=> URL.revokeObjectURL(url), 4000);
     aviso('Modelo descargado');
@@ -1304,15 +1315,25 @@ function bucle(ahora){
 const lerp= (a, b, t)=> a+ (b- a)* t;
 
 async function iniciar(){
-  await new Promise(r=> requestAnimationFrame(()=> setTimeout(r, 40)));
+  const barra= document.querySelector('.barra-carga i');
   try{
-    moto= crearMoto();
+    moto= await cargarMoto('modelo/r3.glb?v=20261121r3', k=> {
+      $('cargaTxt').textContent= 'Bajando el modelo de la R3 · '+ Math.round(k* 100)+ ' %';
+      if (barra){
+        barra.style.animation= 'none';
+        barra.style.width= Math.max(4, k* 100)+ '%';
+      }
+    });
   }catch(e){
     console.error(e);
-    $('cargaTxt').textContent= 'No se pudo armar la moto en este navegador.';
+    $('cargaTxt').textContent= 'No se pudo cargar la moto. Revisa tu conexión y recarga la página.';
     return;
   }
+  $('cargaTxt').textContent= 'Separando las piezas…';
+  await new Promise(r=> requestAnimationFrame(()=> setTimeout(r, 20)));
   piezas= moto.piezas;
+  relleno= moto.relleno;
+  CARENADO= piezas.filter(p=> p.carenado).map(p=> p.id);
   piezas.forEach((p, i)=> {
     p.indice= i;
     p.mallas= [];
@@ -1326,8 +1347,8 @@ async function iniciar(){
   construirPanel();
   eventos();
   redimensionar();
-  const hash= /#d=([0-9a-z.]*)/.exec(location.hash);
-  const previo= hash? hash[1]: guardado.leer('m3d:diseno', '');
+  const hash= /#r3=([0-9a-z.]*)/.exec(location.hash);
+  const previo= hash? hash[1]: guardado.leer('m3d:r3:diseno', '');
   const cambios= decodificar(previo);
   if (cambios.length) aplicar(cambios, false);
   for (const p of piezas) if (p.pintable) pintarPieza(p, pintura(p));

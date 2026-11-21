@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#16171a">
-<title>Motos 3D · Arma y pinta tu moto pieza por pieza</title>
-<meta name="description" content="Moto deportiva en 3D hecha desde cero: toca cualquier pieza, despiézala y píntala con tus colores.">
+<title>Motos 3D · Pinta la Yamaha R3 pieza por pieza</title>
+<meta name="description" content="Yamaha R3 en 3D con todo el carenado separado: toca cualquier pieza, despiézala y píntala con tus colores para ver cómo queda.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -173,6 +173,8 @@ h1,h2,h3{font-family:"Saira Condensed",Barlow,sans-serif;margin:0;line-height:1.
 .nota{font-size:13px;color:var(--tenue);margin:0 0 12px}
 .pie{font-size:12.5px;color:var(--tenue);border-top:1px solid var(--linea);padding-top:12px;margin-top:6px}
 .pie a{color:inherit}
+.credito{font-size:12.5px;color:var(--tenue);margin:4px 0 14px}
+.credito a{color:inherit}
 .toast{position:absolute;left:50%;bottom:74px;transform:translate(-50%,20px);display:flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;border-radius:14px;background:var(--tinta);color:var(--panel);font-weight:600;font-size:14px;box-shadow:var(--sombra);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:20;max-width:calc(100vw - 24px)}
 .toast.ver{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .escena.con-desliz .toast{bottom:132px}
@@ -218,7 +220,7 @@ dialog::backdrop{background:rgb(0 0 0/.45)}
   <header class="barra">
     <div class="marca">
       <div class="logo" aria-hidden="true">M3</div>
-      <div><h1>Motos 3D</h1><p>Deportiva 300 · modelo original pieza por pieza</p></div>
+      <div><h1>Motos 3D</h1><p>Yamaha R3 · pinta cada pieza del carenado</p></div>
     </div>
     <button class="ico" id="bDeshacer" aria-label="Deshacer" title="Deshacer (Ctrl+Z)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
     <button class="ico" id="bRehacer" aria-label="Rehacer" title="Rehacer (Ctrl+Y)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
@@ -251,7 +253,7 @@ dialog::backdrop{background:rgb(0 0 0/.45)}
       <button id="bFoto" title="Descargar una foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg><span class="t">Foto</span></button>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastTxt"></span><button id="toastBtn" hidden>Deshacer</button></div>
-    <div class="cargando" id="cargando"><b>Armando la moto…</b><div class="barra-carga"><i></i></div><p id="cargaTxt">Construyendo cada pieza del carenado</p></div>
+    <div class="cargando" id="cargando"><b>Cargando la R3…</b><div class="barra-carga"><i></i></div><p id="cargaTxt">Bajando el modelo 3D</p></div>
   </main>
 
   <aside class="panel" id="panel">
@@ -290,7 +292,7 @@ dialog::backdrop{background:rgb(0 0 0/.45)}
     </section>
 
     <section class="cuerpo" id="pPiezas" role="tabpanel" aria-labelledby="tPiezas" hidden>
-      <input class="buscar" id="buscar" type="search" placeholder="Buscar pieza (ej. colín, rin, espejo)" aria-label="Buscar pieza">
+      <input class="buscar" id="buscar" type="search" placeholder="Buscar pieza (ej. lateral, colín, rin)" aria-label="Buscar pieza">
       <div id="grupos"></div>
     </section>
 
@@ -304,7 +306,7 @@ dialog::backdrop{background:rgb(0 0 0/.45)}
         <p class="nota">Cada combinación pinta por grupos. Toca «Elegir» para seleccionar todas las piezas de un grupo y cambiarles el color de una vez.</p>
         <div class="roles" id="roles"></div>
       </div>
-      <p class="pie">Este modelo 3D se hizo desde cero con código para este proyecto. Es una deportiva original y no copia el diseño de ninguna marca. <a href="galeria.html">Ver la galería con modelos reales de Sketchfab</a>.</p>
+      <p class="pie">Modelo 3D basado en <a href="https://sketchfab.com/3d-models/yamaha-yzf-r3-2015-3b1aa6970bc944299c3f1e4914e630ca" target="_blank" rel="noopener">«Yamaha YZF R3 2015»</a> de <a href="https://sketchfab.com/niev" target="_blank" rel="noopener">Nieve5677</a>, con licencia <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Cambios: se giró, se separó cada pieza del carenado y se le pusieron nombres y materiales nuevos. Los colores de fábrica son los de la R3 2016 Racing Blue, sin calcomanías. <a href="galeria.html">Ver la galería con otros modelos de Sketchfab</a>.</p>
     </section>
   </aside>
 </div>
@@ -313,10 +315,11 @@ dialog::backdrop{background:rgb(0 0 0/.45)}
     <h2>Cómo se usa</h2>
     <ol class="pasos">
       <li><span class="num">1</span><div><b>Toca una pieza</b><span>Se marca en naranja y arriba sale su nombre. Toca el fondo para soltarla.</span></div></li>
-      <li><span class="num">2</span><div><b>Despiézala</b><span>«Despiezar» separa todo el carenado. Con «Nombres» ves cómo se llama cada parte y también puedes tocar el nombre.</span></div></li>
+      <li><span class="num">2</span><div><b>Despiézala</b><span>«Despiezar» separa todo el carenado. Con «Nombres» ves cómo se llama cada tapa y también puedes tocar el nombre.</span></div></li>
       <li><span class="num">3</span><div><b>Píntala</b><span>Elige un color y un acabado abajo. Con «Ambos lados» se pintan izquierda y derecha juntas.</span></div></li>
       <li><span class="num">4</span><div><b>Compártela</b><span>«Compartir» copia un link con tu diseño. También se guarda solo en este teléfono.</span></div></li>
     </ol>
+    <p class="credito">Modelo: <a href="https://sketchfab.com/3d-models/yamaha-yzf-r3-2015-3b1aa6970bc944299c3f1e4914e630ca" target="_blank" rel="noopener">«Yamaha YZF R3 2015»</a> de Nieve5677 · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> · modificado para separar las piezas.</p>
     <div class="fila-b">
       <button class="btn" id="bGlb">Descargar modelo (.glb)</button>
       <button class="btn" id="bReiniciar">Volver a los colores de fábrica</button>
@@ -325,6 +328,6 @@ dialog::backdrop{background:rgb(0 0 0/.45)}
   </div>
 </dialog>
 
-<script type="module" src="app.js?v=20261121b"></script>
+<script type="module" src="app.js?v=20261121r3"></script>
 </body>
 </html>
